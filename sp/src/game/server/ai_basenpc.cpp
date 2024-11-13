@@ -6926,6 +6926,9 @@ void CAI_BaseNPC::NPCInit ( void )
 	SetDeathPoseFrame( 0 );
 
 	m_EnemiesSerialNumber = -1;
+
+	//AddGlowEffect();
+	//SetGlowEffectColor(1, 0, 0);
 }
 
 //-----------------------------------------------------------------------------

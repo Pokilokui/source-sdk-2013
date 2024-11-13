@@ -76,7 +76,7 @@ BEGIN_DATADESC( CFuncTank )
 	DEFINE_KEYFIELD( m_iBulletDamage, FIELD_INTEGER, "bullet_damage" ),
 	DEFINE_KEYFIELD( m_iBulletDamageVsPlayer, FIELD_INTEGER, "bullet_damage_vs_player" ),
 	DEFINE_KEYFIELD( m_iszMaster, FIELD_STRING, "master" ),
-	
+
 #ifdef HL2_EPISODIC	
 	DEFINE_KEYFIELD( m_iszAmmoType, FIELD_STRING, "ammotype" ),
 	DEFINE_FIELD( m_iAmmoType, FIELD_INTEGER ),
@@ -737,7 +737,7 @@ void CFuncTank::Spawn( void )
 
 #ifdef HL2_EPISODIC
 	m_iAmmoType = GetAmmoDef()->Index( STRING( m_iszAmmoType ) );
-#else
+#else*/
 	m_iSmallAmmoType	= GetAmmoDef()->Index("Pistol");
 	m_iMediumAmmoType	= GetAmmoDef()->Index("SMG1");
 	m_iLargeAmmoType	= GetAmmoDef()->Index("AR2");

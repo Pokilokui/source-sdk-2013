@@ -25,8 +25,9 @@ public:
 	void Spawn( void );
 	void Precache( void );
 
+#if 0 // FIXME: OnTakeDamage_Alive() is no longer called now that base grenade derives from CBaseAnimating
 	int OnTakeDamage_Alive( const CTakeDamageInfo &info );
-	
+#endif	
 	void WarningThink( void );
 	void PowerupThink( void );
 	void BeamBreakThink( void );
@@ -35,6 +36,10 @@ public:
 
 	void MakeBeam( void );
 	void KillBeam( void );
+
+	//void AttachToEntity(const CBaseEntity* const ent);
+	void AttachToEntity(CBaseEntity* ent);
+	void OnTakeDamage_Alive(void);
 
 public:
 	EHANDLE		m_hOwner;
@@ -48,6 +53,12 @@ private:
 	CBeam		*m_pBeam;
 	Vector		m_posOwner;
 	Vector		m_angleOwner;
+
+	//const CBaseEntity* m_pAttachedObject;
+	CBaseEntity* m_pAttachedObject;
+	Vector m_vecOldPosAttachedObject;
+	QAngle m_vecOldAngAttachedObject;
+	int m_pAttachedSequence;
 
 	DECLARE_DATADESC();
 };

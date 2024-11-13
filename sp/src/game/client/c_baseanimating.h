@@ -27,6 +27,10 @@
 #include "tier0/threadtools.h"
 #include "datacache/idatacache.h"
 
+#ifdef GLOWS_ENABLE		//Adding Glow Effects
+#include "glow_outline_effect.h"
+#endif // GLOWS_ENABLE
+
 #define LIPSYNC_POSEPARAM_NAME "mouth"
 #define NUM_HITBOX_FIRES	10
 
@@ -141,6 +145,11 @@ public:
 	virtual void BuildTransformations( CStudioHdr *pStudioHdr, Vector *pos, Quaternion q[], const matrix3x4_t& cameraTransform, int boneMask, CBoneBitList &boneComputed );
 	virtual void ApplyBoneMatrixTransform( matrix3x4_t& transform );
  	virtual int	VPhysicsGetObjectList( IPhysicsObject **pList, int listMax );
+
+#ifdef GLOWS_ENABLE		//Adding Glow Effects
+	CGlowObject* GetGlowObject(void) { return m_pGlowEffect; }
+	virtual void		GetGlowEffectColor(float* r, float* g, float* b);
+#endif // GLOWS_ENABLE
 
 	// model specific
 	virtual bool SetupBones( matrix3x4_t *pBoneToWorldOut, int nMaxBones, int boneMask, float currentTime );
@@ -445,10 +454,19 @@ public:
 
 	virtual bool					IsViewModel() const;
 
+
+
 protected:
+
+#ifdef GLOWS_ENABLE			//Adding Glow Effects
+	virtual void		UpdateGlowEffect(void);
+	virtual void		DestroyGlowEffect(void);
+#endif // GLOWS_ENABLE
+
 	// View models scale their attachment positions to account for FOV. To get the unmodified
 	// attachment position (like if you're rendering something else during the view model's DrawModel call),
 	// use TransformViewModelAttachmentToWorld.
+
 	virtual void					FormatViewModelAttachment( int nAttachment, matrix3x4_t &attachmentToWorld ) {}
 
 	// View models say yes to this.
@@ -464,6 +482,16 @@ protected:
 	virtual bool					CalcAttachments();
 
 private:
+
+#ifdef GLOWS_ENABLE		//Adding Glow Effects
+	float				m_flGlowR;
+	float				m_flGlowG;
+	float				m_flGlowB;
+	bool				m_bGlowEnabled;
+	bool				m_bOldGlowEnabled;
+	CGlowObject			*m_pGlowEffect;
+#endif // GLOWS_ENABLE
+
 	// This method should return true if the bones have changed + SetupBones needs to be called
 	virtual float					LastBoneChangedTime() { return FLT_MAX; }
 

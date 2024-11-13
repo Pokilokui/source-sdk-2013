@@ -865,7 +865,9 @@ void CC_Player_SetModel( const CCommand &args )
 		UTIL_SetSize(pPlayer, VEC_HULL_MIN, VEC_HULL_MAX);
 	}
 }
+
 static ConCommand setmodel("setmodel", CC_Player_SetModel, "Changes's player's model", FCVAR_CHEAT );
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 

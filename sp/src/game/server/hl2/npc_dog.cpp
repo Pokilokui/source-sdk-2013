@@ -455,7 +455,8 @@ void CNPC_Dog::Spawn( void )
 
 	BaseClass::Spawn();
 
-	SetModel( "models/dog.mdl" );
+	//SetModel( "models/dog.mdl" );
+	SetModel(STRING(GetModelName()));
 
 	SetHullType( HULL_WIDE_HUMAN );
 	SetHullSizeNormal();
@@ -638,7 +639,18 @@ void CNPC_Dog::PullObject( bool bMantain )
 //-----------------------------------------------------------------------------
 void CNPC_Dog::Precache( void )
 {
-	PrecacheModel( "models/dog.mdl" );
+	//PrecacheModel( "models/dog.mdl" );
+
+	if (!Q_strnicmp(STRING(gpGlobals->mapname), "ep1", 3))
+		SetModelName(AllocPooledString("models/dog_ep1/dog_ep1.mdl"));
+	else if (!Q_strnicmp(STRING(gpGlobals->mapname), "ep2", 3))
+		SetModelName(AllocPooledString("models/dog.mdl"));
+	else if (CBaseEntity::GetModelName() == NULL_STRING)
+		SetModelName(AllocPooledString("models/dog_hl2/dog_hl2.mdl"));
+	else
+		SetModelName(CBaseEntity::GetModelName());
+
+	PrecacheModel(STRING(GetModelName()));
 	
 	PrecacheScriptSound( "Weapon_PhysCannon.Launch" );
 

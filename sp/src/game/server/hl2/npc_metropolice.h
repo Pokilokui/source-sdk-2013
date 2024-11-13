@@ -40,6 +40,7 @@ public:
 	bool CreateBehaviors();
 	void Spawn( void );
 	void Precache( void );
+	void SelectModel();
 
 	Class_T		Classify( void );
 	Disposition_t IRelationType(CBaseEntity *pTarget);

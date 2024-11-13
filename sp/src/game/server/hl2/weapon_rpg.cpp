@@ -1407,6 +1407,15 @@ acttable_t	CWeaponRPG::m_acttable[] =
 	{ ACT_RUN,						ACT_RUN_RPG,					true },
 	{ ACT_RUN_CROUCH,				ACT_RUN_CROUCH_RPG,				true },
 	{ ACT_COVER_LOW,				ACT_COVER_LOW_RPG,				true },
+
+	{ ACT_HL2MP_IDLE,                    ACT_HL2MP_IDLE_RPG,                    false },
+	{ ACT_HL2MP_RUN,                    ACT_HL2MP_RUN_RPG,                    false },
+	{ ACT_HL2MP_IDLE_CROUCH,            ACT_HL2MP_IDLE_CROUCH_RPG,            false },
+	{ ACT_HL2MP_WALK_CROUCH,            ACT_HL2MP_WALK_CROUCH_RPG,            false },
+	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,    ACT_HL2MP_GESTURE_RANGE_ATTACK_RPG,    false },
+	{ ACT_HL2MP_GESTURE_RELOAD,            ACT_HL2MP_GESTURE_RELOAD_RPG,        false },
+	{ ACT_HL2MP_JUMP,                    ACT_HL2MP_JUMP_RPG,                    false },
+	{ ACT_RANGE_ATTACK1,                ACT_RANGE_ATTACK_RPG,                false },
 };
 
 IMPLEMENT_ACTTABLE(CWeaponRPG);
@@ -2039,7 +2048,8 @@ bool CWeaponRPG::WeaponLOSCondition( const Vector &ownerPos, const Vector &targe
 			Vector vecShootDir = npcOwner->GetActualShootTrajectory( vecMuzzle );
 
 			// Make sure I have a good 10 feet of wide clearance in front, or I'll blow my teeth out.
-			AI_TraceHull( vecMuzzle, vecMuzzle + vecShootDir * (10.0f*12.0f), Vector( -24, -24, -24 ), Vector( 24, 24, 24 ), MASK_NPCSOLID, NULL, &tr );
+			//Old code AI_TraceHull( vecMuzzle, vecMuzzle + vecShootDir * (10.0f*12.0f), Vector( -24, -24, -24 ), Vector( 24, 24, 24 ), MASK_NPCSOLID, NULL, &tr );
+			AI_TraceHull(vecMuzzle, vecMuzzle + vecShootDir * (10.0f * 12.0f), Vector(-24, -24, -24), Vector(24, 24, 24), MASK_NPCSOLID, npcOwner, COLLISION_GROUP_NONE, &tr);
 
 			if( tr.fraction != 1.0f )
 				bResult = false;
@@ -2089,7 +2099,9 @@ int CWeaponRPG::WeaponRangeAttack1Condition( float flDot, float flDist )
 		Vector vecShootDir = pOwner->GetActualShootTrajectory( vecMuzzle );
 
 		// Make sure I have a good 10 feet of wide clearance in front, or I'll blow my teeth out.
-		AI_TraceHull( vecMuzzle, vecMuzzle + vecShootDir * (10.0f*12.0f), Vector( -24, -24, -24 ), Vector( 24, 24, 24 ), MASK_NPCSOLID, NULL, &tr );
+		// OLd code AI_TraceHull( vecMuzzle, vecMuzzle + vecShootDir * (10.0f*12.0f), Vector( -24, -24, -24 ), Vector( 24, 24, 24 ), MASK_NPCSOLID, NULL, &tr );
+		AI_TraceHull( vecMuzzle, vecMuzzle + vecShootDir * ( 10.0f * 12.0f ), Vector( -24, -24, -24 ), Vector ( 24, 24, 24 ), MASK_NPCSOLID, pOwner, COLLISION_GROUP_NONE, &tr );
+
 
 		if( tr.fraction != 1.0 )
 		{

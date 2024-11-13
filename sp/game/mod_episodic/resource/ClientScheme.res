@@ -24,6 +24,7 @@ Scheme
 	BaseSettings
 	{
 		"FgColor"			"255 220 0 100"
+		"FgColor_vrmode"	"255 220 0 200"
 		"BgColor"			"0 0 0 76"
 
 		"Panel.FgColor"			"255 220 0 100"
@@ -50,9 +51,9 @@ Scheme
 		"Caution"			"255 48 0 255"
 
 		// Top-left corner of the "Half-Life 2" on the main screen
-		"Main.Title1.X"				"76"
-		"Main.Title1.Y"				"145"
-		"Main.Title1.Y_hidef"		"130"
+		"Main.Title1.X"			"76"
+		"Main.Title1.Y"			"145"
+		"Main.Title1.Y_hidef"	"130"
 		"Main.Title1.Color"	"255 255 255 255"
 
 		// Top-left corner of secondary title e.g. "DEMO" on the main screen
@@ -590,7 +591,7 @@ Scheme
 				"name"		"Verdana" [$OSX]
 				"tall"		"16" [!$OSX]
 				"tall"		"14" [$OSX]
-				"tall_hidef"	"24"
+ 				"tall_hidef"	"24"
 				"weight"	"900"
 				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
 			}
@@ -631,7 +632,7 @@ Scheme
 		{
 			"1"
 			{
-				"name"  "HL2EP2"
+				"name"  "K12HL2"
 				"tall"			"34"
 				"tall_hidef"	"48"
 				"weight" "0"
@@ -783,6 +784,74 @@ Scheme
 			}
 			
 		}
+		
+		// CS:S weapons
+		"CSS_WeaponIcons"
+		{
+			"1"
+			{
+				"name"		"cs"
+				"tall"		"92" // 64
+				"tall_hidef"	"86" // 58
+				"weight"	"0"
+				"antialias" "1"
+				"additive"	"1"
+				"custom"	"1"
+			}
+		}
+		"CSS_WeaponIconsSelected"
+		{
+			"1"
+			{
+				"name"		"cs"
+				"tall"		"92" // 64
+				"tall_hidef"	"86" // 58
+				"weight"	"0"
+				"antialias" "1"
+				"blur"		"5"
+				"scanlines"	"2"
+				"additive"	"1"
+				"custom"	"1"
+			}
+		}
+		"CSS_WeaponIconsSmall"
+		{
+			"1"
+			{
+				"name"		"cs"
+				"tall"		"32"
+				"weight"	"0"
+				"antialias" "1"
+				"additive"	"1"
+				"custom"	"1"
+			}
+		}
+		
+		"CSS_WeaponIconsSmall2"
+		{
+			"1"
+			{
+				"name"		"Counter-Strike-HL2-style"
+				"tall"		"32"
+				"weight"	"0"
+				"antialias" "1"
+				"additive"	"1"
+				"custom"	"1"
+			}
+		}
+		
+		"CSS_WeaponIconsSmall3"
+		{
+			"1"
+			{
+				"name"		"csd"
+				"tall"		"32"
+				"weight"	"0"
+				"antialias" "1"
+				"additive"	"1"
+				"custom"	"1"
+			}
+		}
 	}
 
 	
@@ -793,7 +862,13 @@ Scheme
 	{
 		"1"		"resource/HALFLIFE2.ttf"
 		"2"		"resource/HL2crosshairs.ttf"
-		"3"	"resource/HL2EP2.ttf"		
+		"3"		"resource/Blazed.ttf"
+		"4"		"resource/K12HL2.ttf"
+		"5"		"resource/HL2EP2.ttf"
+		"6"		"resource/cs.ttf" // CS:S weapons
+		"7"		"resource/cs_hl2_custom.ttf" // CS:S weapons
+		"8"		"resource/csd.ttf" // CS:S weapons
+
 	}
 
 }

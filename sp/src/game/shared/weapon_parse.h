@@ -39,6 +39,7 @@ typedef enum {
 	SPECIAL3,
 	TAUNT,
 	DEPLOY,
+	LE_CACA,
 
 	// Add new shoot sound types here
 
@@ -99,6 +100,8 @@ public:
 	char					szAmmo1[MAX_WEAPON_AMMO_NAME];			// "primary" ammo type
 	char					szAmmo2[MAX_WEAPON_AMMO_NAME];			// "secondary" ammo type
 
+	float					m_flViewModelFOV;						// Dynamic Viewmodel FOV
+
 	// Sound blocks
 	char					aShootSounds[NUM_SHOOT_SOUND_TYPES][MAX_WEAPON_STRING];	
 
@@ -130,6 +133,12 @@ public:
 
 // SERVER DLL
 
+	//jorg40 - ironsight
+	Vector m_expOffset; //ADDED
+	QAngle m_expOriOffset; //ADDED
+
+	int m_iPlayerDamage;
+
 };
 
 // The weapon parse function
@@ -156,6 +165,5 @@ KeyValues* ReadEncryptedKVFile( IFileSystem *filesystem, const char *szFilenameW
 
 // Each game implements this. It can return a derived class and override Parse() if it wants.
 extern FileWeaponInfo_t* CreateWeaponInfo();
-
 
 #endif // WEAPON_PARSE_H

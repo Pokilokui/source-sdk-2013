@@ -82,6 +82,15 @@ acttable_t	CWeaponAlyxGun::m_acttable[] =
 	{ ACT_READINESS_AGITATED_TO_STIMULATED, ACT_READINESS_PISTOL_AGITATED_TO_STIMULATED, false },
 	{ ACT_READINESS_STIMULATED_TO_RELAXED, ACT_READINESS_PISTOL_STIMULATED_TO_RELAXED, false },
 
+	{ ACT_HL2MP_IDLE,                    ACT_HL2MP_IDLE_PISTOL,                    false },
+	{ ACT_HL2MP_RUN,                    ACT_HL2MP_RUN_PISTOL,                    false },
+	{ ACT_HL2MP_IDLE_CROUCH,            ACT_HL2MP_IDLE_CROUCH_PISTOL,            false },
+	{ ACT_HL2MP_WALK_CROUCH,            ACT_HL2MP_WALK_CROUCH_PISTOL,            false },
+	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,    ACT_HL2MP_GESTURE_RANGE_ATTACK_PISTOL,    false },
+	{ ACT_HL2MP_GESTURE_RELOAD,            ACT_HL2MP_GESTURE_RELOAD_PISTOL,        false },
+	{ ACT_HL2MP_JUMP,                    ACT_HL2MP_JUMP_PISTOL,                    false },
+	{ ACT_RANGE_ATTACK1,                ACT_RANGE_ATTACK_PISTOL,                false },
+
 
 //	{ ACT_ARM,				ACT_ARM_PISTOL,					true },
 //	{ ACT_DISARM,			ACT_DISARM_PISTOL,				true },
@@ -123,6 +132,13 @@ void CWeaponAlyxGun::Precache( void )
 void CWeaponAlyxGun::Equip( CBaseCombatCharacter *pOwner )
 {
 	BaseClass::Equip( pOwner );
+}
+
+bool CWeaponAlyxGun::Reload(void)		// Fix reload sound
+{
+	if (DefaultReload(GetMaxClip1(), GetMaxClip2(), ACT_VM_RELOAD))
+		WeaponSound(RELOAD);
+	return BaseClass::Reload();
 }
 
 //-----------------------------------------------------------------------------

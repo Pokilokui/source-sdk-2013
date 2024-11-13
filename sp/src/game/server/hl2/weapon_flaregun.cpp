@@ -80,6 +80,21 @@ IMPLEMENT_SERVERCLASS_ST( CFlare, DT_Flare )
 	SendPropInt( SENDINFO( m_bPropFlare ), 1, SPROP_UNSIGNED ),
 END_SEND_TABLE()
 
+
+acttable_t CFlaregun::m_acttable[] =
+{
+	{ ACT_HL2MP_IDLE,                    ACT_HL2MP_IDLE_PISTOL,                    false },
+	{ ACT_HL2MP_RUN,                    ACT_HL2MP_RUN_PISTOL,                    false },
+	{ ACT_HL2MP_IDLE_CROUCH,            ACT_HL2MP_IDLE_CROUCH_PISTOL,            false },
+	{ ACT_HL2MP_WALK_CROUCH,            ACT_HL2MP_WALK_CROUCH_PISTOL,            false },
+	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,    ACT_HL2MP_GESTURE_RANGE_ATTACK_PISTOL,    false },
+	{ ACT_HL2MP_GESTURE_RELOAD,            ACT_HL2MP_GESTURE_RELOAD_PISTOL,        false },
+	{ ACT_HL2MP_JUMP,                    ACT_HL2MP_JUMP_PISTOL,                    false },
+	{ ACT_RANGE_ATTACK1,                ACT_RANGE_ATTACK_PISTOL,                false },
+};
+
+IMPLEMENT_ACTTABLE(CFlaregun);
+
 CFlare *CFlare::activeFlares = NULL;
 
 CFlare *CFlare::GetActiveFlares( void )
@@ -401,9 +416,10 @@ void CFlare::FlareTouch( CBaseEntity *pOther )
 		}
 
 		//Use m_pOwner, not GetOwnerEntity()
-		pOther->TakeDamage( CTakeDamageInfo( this, m_pOwner, iDamage, (DMG_BULLET|DMG_BURN) ) );
-		m_flNextDamage = gpGlobals->curtime + 1.0f;
 		*/
+		int iDamage = 0;
+		pOther->TakeDamage(CTakeDamageInfo(this, m_pOwner, iDamage, (DMG_BULLET | DMG_BURN)));
+		m_flNextDamage = gpGlobals->curtime + 1.0f;
 
 		CBaseAnimating *pAnim;
 
@@ -439,7 +455,7 @@ void CFlare::FlareTouch( CBaseEntity *pOther )
 			if ( pdata != NULL )
 			{
 				//Only embed into concrete and wood (jdw: too obscure for players?)
-				//if ( ( pdata->gameMaterial == 'C' ) || ( pdata->gameMaterial == 'W' ) )
+				if ( ( pdata->game.material == 'C' )) //|| ( pdata->game.material == 'W' ) )
 				{
 					Vector	impactDir = ( tr.endpos - tr.startpos );
 					VectorNormalize( impactDir );
@@ -491,7 +507,7 @@ void CFlare::FlareTouch( CBaseEntity *pOther )
 		m_nBounces++;
 
 		//After the first bounce, smacking into whoever fired the flare is fair game
-		SetOwnerEntity( this );	
+		//SetOwnerEntity( this );	
 
 		// Slow down
 		Vector vecNewVelocity = GetAbsVelocity();
@@ -657,7 +673,7 @@ void CFlare::AddToActiveFlares( void )
 	}
 }
 
-#if 0
+#if 1
 
 IMPLEMENT_SERVERCLASS_ST(CFlaregun, DT_Flaregun)
 END_SEND_TABLE()
@@ -751,5 +767,4 @@ void CFlaregun::SecondaryAttack( void )
 
 	WeaponSound( SINGLE );
 }
-
 #endif

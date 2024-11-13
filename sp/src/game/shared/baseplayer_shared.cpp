@@ -13,6 +13,12 @@
 #include "tf_gamerules.h"
 #endif
 
+#ifdef CLIENT_DLL//Third person death
+#include "input.h"//
+#endif//
+
+//extern ConVar* cl_ragdoll_death_cam;
+
 #if defined( CLIENT_DLL )
 
 	#include "iclientvehicle.h"
@@ -1531,38 +1537,48 @@ void CBasePlayer::ResetObserverMode()
 //			zFar - 
 //			fov - 
 //-----------------------------------------------------------------------------
-void CBasePlayer::CalcView( Vector &eyeOrigin, QAngle &eyeAngles, float &zNear, float &zFar, float &fov )
+void CBasePlayer::CalcView(Vector& eyeOrigin, QAngle& eyeAngles, float& zNear, float& zFar, float& fov)
 {
 #if defined( CLIENT_DLL )
-	IClientVehicle *pVehicle; 
+	IClientVehicle* pVehicle;
 #else
-	IServerVehicle *pVehicle;
+	IServerVehicle* pVehicle;
 #endif
 	pVehicle = GetVehicle();
 
-	if ( !pVehicle )
+	if (!pVehicle)
 	{
 #if defined( CLIENT_DLL )
-		if( UseVR() )
+		if (UseVR())
 			g_ClientVirtualReality.CancelTorsoTransformOverride();
 #endif
 
-		if ( IsObserver() )
+		if (IsObserver())
 		{
-			CalcObserverView( eyeOrigin, eyeAngles, fov );
+			CalcObserverView(eyeOrigin, eyeAngles, fov);
 		}
+#ifdef CLIENT_DLL
+		else if (!this->IsAlive() && ::input->CAM_IsThirdPerson())
+		{
+			CalcThirdPersonDeathView(eyeOrigin, eyeAngles, fov);
+		}
+		else if (!this->IsAlive())
+		{
+			CalcDeathCamView(eyeOrigin, eyeAngles, fov);
+		}
+#endif
 		else
 		{
-			CalcPlayerView( eyeOrigin, eyeAngles, fov );
+			CalcPlayerView(eyeOrigin, eyeAngles, fov);
 		}
 	}
 	else
 	{
-		CalcVehicleView( pVehicle, eyeOrigin, eyeAngles, zNear, zFar, fov );
+		CalcVehicleView(pVehicle, eyeOrigin, eyeAngles, zNear, zFar, fov);
 	}
 	// NVNT update fov on the haptics dll for input scaling.
 #if defined( CLIENT_DLL )
-	if(IsLocalPlayer() && haptics)
+	if (IsLocalPlayer() && haptics)
 		haptics->UpdatePlayerFOV(fov);
 #endif
 }

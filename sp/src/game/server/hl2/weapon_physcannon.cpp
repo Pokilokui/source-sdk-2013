@@ -177,6 +177,8 @@ public:
 
 protected:
 	const IHandleEntity *m_pTraceOwner;
+
+
 };
 
 // We want to test against brushes alone
@@ -1217,6 +1219,7 @@ public:
 
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
+	DECLARE_ACTTABLE();
 
 	CWeaponPhysCannon( void );
 
@@ -1384,6 +1387,20 @@ protected:
 	static int m_poseActive;
 	static bool m_sbStaticPoseParamsLoaded;
 };
+
+acttable_t CWeaponPhysCannon::m_acttable[] =
+{
+	{ ACT_HL2MP_IDLE,                    ACT_HL2MP_IDLE_PHYSGUN,                    false },
+	{ ACT_HL2MP_RUN,                    ACT_HL2MP_RUN_PHYSGUN,                    false },
+	{ ACT_HL2MP_IDLE_CROUCH,            ACT_HL2MP_IDLE_CROUCH_PHYSGUN,            false },
+	{ ACT_HL2MP_WALK_CROUCH,            ACT_HL2MP_WALK_CROUCH_PHYSGUN,            false },
+	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,    ACT_HL2MP_GESTURE_RANGE_ATTACK_PHYSGUN,    false },
+	{ ACT_HL2MP_GESTURE_RELOAD,            ACT_HL2MP_GESTURE_RELOAD_PHYSGUN,        false },
+	{ ACT_HL2MP_JUMP,                    ACT_HL2MP_JUMP_PHYSGUN,                    false },
+	{ ACT_RANGE_ATTACK1,                ACT_RANGE_ATTACK_SLAM,                false },
+};
+
+IMPLEMENT_ACTTABLE(CWeaponPhysCannon);
 
 bool CWeaponPhysCannon::m_sbStaticPoseParamsLoaded = false;
 int CWeaponPhysCannon::m_poseActive = 0;

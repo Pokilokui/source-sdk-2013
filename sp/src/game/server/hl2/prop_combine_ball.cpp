@@ -366,6 +366,9 @@ bool CPropCombineBall::CreateVPhysics()
 //-----------------------------------------------------------------------------
 void CPropCombineBall::Spawn( void )
 {
+	//propCombineBallPos = GetAbsOrigin();
+	//SetThink(&CPropCombineBall::Think);
+	//SetNextThink(gpGlobals->curtime);
 	BaseClass::Spawn();
 
 	SetModel( PROP_COMBINE_BALL_MODEL );
@@ -2187,6 +2190,16 @@ public:
 
 		return false;
 	}
+	/*
+	void Think(void)
+	{
+		propCombineBallPos = GetAbsOrigin();
+		float distance = CollisionProp()->CalcDistanceFromPoint(UTIL_GetLocalPlayer()->GetAbsOrigin());
+		if (distance < 20)
+		{
+			bool Break = Brea(UTIL_GetLocalPlayer());
+		}
+	}*/
 };
 
 LINK_ENTITY_TO_CLASS( filter_combineball_type, CFilterCombineBall );

@@ -76,6 +76,7 @@ class CUserCmd;
 	acttable_t *className::ActivityList( void ) { return m_acttable; } \
 	int className::ActivityListCount( void ) { return ARRAYSIZE(m_acttable); } \
 
+
 typedef struct
 {
 	int			baseAct;
@@ -148,6 +149,8 @@ private:
 	bool							m_bActive;
 
 };
+
+//Ironsight
 
 //-----------------------------------------------------------------------------
 // Purpose: Client side rep of CBaseTFCombatWeapon 
@@ -392,6 +395,7 @@ public:
 	virtual void			Activate( void );
 
 	virtual bool ShouldUseLargeViewModelVROverride() { return false; }
+
 public:
 // Server Only Methods
 #if !defined( CLIENT_DLL )
@@ -633,6 +637,7 @@ protected:
 	int						m_iOldState;
 
 #endif // End Client .dll only
+
 };
 
 #endif // COMBATWEAPON_SHARED_H

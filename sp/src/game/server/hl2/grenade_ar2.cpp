@@ -17,6 +17,11 @@
 #include "engine/IEngineSound.h"
 #include "world.h"
 
+//grenade go trought func_breakable
+#include "func_break.h" 
+#include "func_breakablesurf.h"
+//
+
 #ifdef PORTAL
 	#include "portal_util_shared.h"
 #endif
@@ -42,6 +47,8 @@ BEGIN_DATADESC( CGrenadeAR2 )
 	DEFINE_FIELD( m_hSmokeTrail, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_fSpawnTime, FIELD_TIME ),
 	DEFINE_FIELD( m_fDangerRadius, FIELD_FLOAT ),
+	DEFINE_FIELD( m_vecVelocity, FIELD_VECTOR ), //func_breakable
+	DEFINE_FIELD( m_bTouched, FIELD_BOOLEAN ),   //same
 
 	// Function pointers
 	DEFINE_ENTITYFUNC( GrenadeAR2Touch ),
@@ -82,6 +89,8 @@ void CGrenadeAR2::Spawn( void )
 	m_takedamage	= DAMAGE_YES;
 	m_bIsLive		= true;
 	m_iHealth		= 1;
+	m_bTouched		= false;	//func_breakable
+	m_vecVelocity	= vec3_origin; //same
 
 	SetGravity( UTIL_ScaleForGravity( 400 ) );	// use a lower gravity for grenades to make them easier to see
 	SetFriction( 0.8 );
@@ -146,6 +155,12 @@ void CGrenadeAR2::GrenadeAR2Think( void )
 		{
 			Detonate();
 		}
+
+		if (m_bTouched) //func_breakable
+		{
+			SetAbsVelocity(m_vecVelocity);
+			m_bTouched = false;
+		}
 	}
 
 	// The old way of making danger sounds would scare the crap out of EVERYONE between you and where the grenade
@@ -169,6 +184,32 @@ void CGrenadeAR2::GrenadeAR2Touch( CBaseEntity *pOther )
 	Assert( pOther );
 	if ( !pOther->IsSolid() )
 		return;
+	// func_breakable
+	if (FClassnameIs(pOther, "func_breakable_surf"))
+	{
+		CBreakableSurface* pBreakable = static_cast<CBreakableSurface*>(pOther);
+		if (pBreakable)
+		{
+			m_bTouched = true;
+			m_vecVelocity = GetAbsVelocity();
+			pBreakable->Die(this, m_vecVelocity);
+			return;
+		}
+	}
+
+
+	else if (FClassnameIs(pOther, "func_breakable"))
+	{
+		CBreakable* pBreakable = static_cast<CBreakable*>(pOther);
+		if (pBreakable)
+		{
+			m_bTouched = true;
+			pBreakable->Break(this);
+			m_vecVelocity = GetAbsVelocity();
+			return;
+		}
+	}
+	//
 
 	// If I'm live go ahead and blow up
 	if (m_bIsLive)

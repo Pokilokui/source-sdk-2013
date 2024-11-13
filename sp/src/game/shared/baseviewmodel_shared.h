@@ -28,10 +28,19 @@ class CVGuiScreen;
 
 #define VIEWMODEL_INDEX_BITS 1
 
+//For viewmodels, better than remembering the numbers and then messing up afterwards! (SMOD)
+#define VM_LEGS 1
+
 class CBaseViewModel : public CBaseAnimating, public IHasOwner
 {
 	DECLARE_CLASS( CBaseViewModel, CBaseAnimating );
 public:
+
+	ConVar* mat_viewmodel_projected_textures = cvar->FindVar("mat_viewmodel_projected_textures"); // viewmodel shadows
+
+	//Ironsight
+	bool m_bExpSighted; //ADDED
+	float m_expFactor; //ADDED
 
 	DECLARE_NETWORKCLASS();
 	DECLARE_PREDICTABLE();
@@ -145,7 +154,11 @@ public:
 	// Should this object receive shadows?
 	virtual bool			ShouldReceiveProjectedTextures( int flags )
 	{
-		return false;
+		//return false;
+		if (mat_viewmodel_projected_textures->GetBool() == 0)
+			return false;
+		else
+			return true;
 	}
 
 	// Add entity to visible view models list?
@@ -172,6 +185,7 @@ public:
 	virtual	bool			GetAttachment( int number, Vector &origin, QAngle &angles );
 	virtual bool			GetAttachmentVelocity( int number, Vector &originVel, Quaternion &angleVel );
 #endif
+
 
 private:
 	CBaseViewModel( const CBaseViewModel & ); // not defined, not accessible

@@ -190,9 +190,9 @@ END_SEND_TABLE();
 // This table encodes the CBaseCombatCharacter
 //-----------------------------------------------------------------------------
 IMPLEMENT_SERVERCLASS_ST(CBaseCombatCharacter, DT_BaseCombatCharacter)
-#ifdef GLOWS_ENABLE
+/*#ifdef GLOWS_ENABLE
 	SendPropBool( SENDINFO( m_bGlowEnabled ) ),
-#endif // GLOWS_ENABLE
+#endif // GLOWS_ENABLE*/
 	// Data that only gets sent to the local player.
 	SendPropDataTable( "bcc_localdata", 0, &REFERENCE_SEND_TABLE(DT_BCCLocalPlayerExclusive), SendProxy_SendBaseCombatCharacterLocalDataTable ),
 
@@ -744,9 +744,9 @@ CBaseCombatCharacter::CBaseCombatCharacter( void )
 
 	m_bForceServerRagdoll = ai_force_serverside_ragdoll.GetBool();
 
-#ifdef GLOWS_ENABLE
+/*#ifdef GLOWS_ENABLE
 	m_bGlowEnabled.Set( false );
-#endif // GLOWS_ENABLE
+#endif // GLOWS_ENABLE*/
 }
 
 //------------------------------------------------------------------------------
@@ -2889,6 +2889,18 @@ CBaseEntity *CBaseCombatCharacter::Weapon_FindUsable( const Vector &range )
 				// No, it's a pistol.
 				continue;
 			}
+			// fix npc take weapon they are not supposed to (I really don't know why they do that)
+			if (FClassnameIs(pWeapon, "weapon_crossbow"))
+			{
+				// No, it's a pistol.
+				continue;
+			}
+
+			if (FClassnameIs(pWeapon, "weapon_357"))
+			{
+				// No, it's a pistol.
+				continue;
+			}
 		}
 
 		float fCurDist = (pWeapon->GetLocalOrigin() - GetLocalOrigin()).Length();
@@ -3230,7 +3242,7 @@ float CBaseCombatCharacter::GetSpreadBias( CBaseCombatWeapon *pWeapon, CBaseEnti
 	return 1.0;
 }
 
-#ifdef GLOWS_ENABLE
+/*#ifdef GLOWS_ENABLE
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -3255,7 +3267,7 @@ bool CBaseCombatCharacter::IsGlowEffectActive( void )
 {
 	return m_bGlowEnabled;
 }
-#endif // GLOWS_ENABLE
+#endif // GLOWS_ENABLE*/
 
 //-----------------------------------------------------------------------------
 // Assume everyone is average with every weapon. Override this to make exceptions.

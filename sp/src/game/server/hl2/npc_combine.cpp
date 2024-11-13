@@ -378,7 +378,7 @@ void CNPC_Combine::PostNPCInit()
 		// an AR2. 
 		if( !GetActiveWeapon() || !FClassnameIs( GetActiveWeapon(), "weapon_ar2" ) )
 		{
-			DevWarning("**Combine Elite Soldier MUST be equipped with AR2\n");
+			//DevWarning("**Combine Elite Soldier MUST be equipped with AR2\n");	// Restore Combine Elite Soldiers's ability to use alt-fire smg1
 		}
 	}
 
@@ -2318,9 +2318,27 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 
 	if (pEvent->type & AE_TYPE_NEWEVENTSYSTEM)
 	{
-		if ( pEvent->event == COMBINE_AE_BEGIN_ALTFIRE )
+		// Restore Combine Elite Soldiers's ability to use alt-fire smg1
+		/*if (pEvent->event == COMBINE_AE_BEGIN_ALTFIRE)
 		{
 			EmitSound( "Weapon_CombineGuard.Special1" );
+			handledEvent = true;
+		}*/
+		if (pEvent->event == COMBINE_AE_BEGIN_ALTFIRE)
+		{
+			//We want it to use different sounds depending on the weapon
+			if (FClassnameIs(GetActiveWeapon(), "weapon_ar2"))
+			{
+				EmitSound("Weapon_CombineGuard.Special1");
+			}
+			else if (FClassnameIs(GetActiveWeapon(), "weapon_smg1"))
+			{
+				EmitSound("Weapon_SMG1.Double");
+			}
+			else
+			{
+				EmitSound("Weapon_CombineGuard.Special1"); // We let this play by default
+			}
 			handledEvent = true;
 		}
 		else if ( pEvent->event == COMBINE_AE_ALTFIRE )
@@ -2565,7 +2583,8 @@ void CNPC_Combine::SpeakSentence( int sentenceType )
 //=========================================================
 // PainSound
 //=========================================================
-void CNPC_Combine::PainSound ( void )
+//void CNPC_Combine::PainSound ( void )	//Restore pain sound
+void CNPC_Combine::PainSound ( const CTakeDamageInfo& info )
 {
 	// NOTE: The response system deals with this at the moment
 	if ( GetFlags() & FL_DISSOLVING )

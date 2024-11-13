@@ -91,6 +91,7 @@
 #include "querycache.h"
 
 
+
 #ifdef TF_DLL
 #include "gc_clientsystem.h"
 #include "econ_item_inventory.h"
@@ -210,6 +211,8 @@ ConVar *sv_maxreplay = NULL;
 static ConVar  *g_pcv_commentary = NULL;
 static ConVar *g_pcv_ThreadMode = NULL;
 static ConVar *g_pcv_hideServer = NULL;
+
+static ConVar* arms_model = NULL;
 
 // String tables
 INetworkStringTable *g_pStringTableParticleEffectNames = NULL;
@@ -682,6 +685,8 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 	g_pGameSaveRestoreBlockSet->AddBlockHandler( GetEventQueueSaveRestoreBlockHandler() );
 	g_pGameSaveRestoreBlockSet->AddBlockHandler( GetAchievementSaveRestoreBlockHandler() );
 
+	//g_pGameSaveRestoreBlockSet->AddBlockHandler(GetMyBlockHandlerSaveRestoreBlockHandler());
+
 	// The string system must init first + shutdown last
 	IGameSystem::Add( GameStringSystem() );
 
@@ -765,6 +770,8 @@ void CServerGameDLL::DLLShutdown( void )
 	g_pGameSaveRestoreBlockSet->RemoveBlockHandler( GetPhysSaveRestoreBlockHandler() );
 	g_pGameSaveRestoreBlockSet->RemoveBlockHandler( GetEntitySaveRestoreBlockHandler() );
 
+	//g_pGameSaveRestoreBlockSet->RemoveBlockHandler(GetMyBlockHandlerSaveRestoreBlockHandler());
+
 	char *pFilename = g_TextStatsMgr.GetStatsFilename();
 	if ( !pFilename || !pFilename[0] )
 	{
@@ -823,7 +830,7 @@ bool CServerGameDLL::ReplayInit( CreateInterfaceFn fnReplayFactory )
 // Purpose: See shareddefs.h for redefining this.  Don't even think about it, though, for HL2.  Or you will pay.  ywb 9/22/03
 // Output : float
 //-----------------------------------------------------------------------------
-float CServerGameDLL::GetTickInterval( void ) const
+float CServerGameDLL::GetTickInterval(void) const
 {
 	float tickinterval = DEFAULT_TICK_INTERVAL;
 

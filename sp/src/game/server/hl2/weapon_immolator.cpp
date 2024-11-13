@@ -34,7 +34,7 @@ public:
 	CWeaponImmolator( void );
 	
 	void Precache( void );
-	void PrimaryAttack( void );
+	//void PrimaryAttack( void );		//Fix
 	void ItemPostFrame( void );
 
 	int CapabilitiesGet( void ) {	return bits_CAP_WEAPON_RANGE_ATTACK1;	}
@@ -48,12 +48,14 @@ public:
 
 	void StartImmolating();
 	void StopImmolating();
-	bool IsImmolating() { return m_flBurnRadius != 0.0; }
+	//bool IsImmolating() { return m_flBurnRadius != 0.0; }
+	bool IsImmolating() { return isActive; }	//Fix
 
 	DECLARE_ACTTABLE();
 	DECLARE_DATADESC();
 
 	int	m_beamIndex;
+	bool isActive;	//Fix
 
 	float m_flBurnRadius;
 	float m_flTimeLastUpdatedRadius;
@@ -74,6 +76,7 @@ BEGIN_DATADESC( CWeaponImmolator )
 	DEFINE_FIELD( m_flBurnRadius, FIELD_FLOAT ),
 	DEFINE_FIELD( m_flTimeLastUpdatedRadius, FIELD_TIME ),
 	DEFINE_FIELD( m_vecImmolatorTarget, FIELD_VECTOR ),
+	DEFINE_FIELD( isActive, FIELD_BOOLEAN ),		//Fix
 
 	DEFINE_ENTITYFUNC( UpdateThink ),
 END_DATADESC()
@@ -84,7 +87,16 @@ END_DATADESC()
 //-----------------------------------------------------------------------------
 acttable_t CWeaponImmolator::m_acttable[] = 
 {
-	{	ACT_RANGE_ATTACK1, ACT_RANGE_ATTACK_SNIPER_RIFLE, true }
+	{	ACT_RANGE_ATTACK1, ACT_RANGE_ATTACK_SNIPER_RIFLE, true },
+
+	{ ACT_HL2MP_IDLE,                    ACT_HL2MP_IDLE_PHYSGUN,                    false },
+	{ ACT_HL2MP_RUN,                    ACT_HL2MP_RUN_PHYSGUN,                    false },
+	{ ACT_HL2MP_IDLE_CROUCH,            ACT_HL2MP_IDLE_CROUCH_PHYSGUN,            false },
+	{ ACT_HL2MP_WALK_CROUCH,            ACT_HL2MP_WALK_CROUCH_PHYSGUN,            false },
+	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,    ACT_HL2MP_GESTURE_RANGE_ATTACK_PHYSGUN,    false },
+	{ ACT_HL2MP_GESTURE_RELOAD,            ACT_HL2MP_GESTURE_RELOAD_PHYSGUN,        false },
+	{ ACT_HL2MP_JUMP,                    ACT_HL2MP_JUMP_PHYSGUN,                    false },
+	{ ACT_RANGE_ATTACK1,                ACT_RANGE_ATTACK_SLAM,                false },
 };
 
 IMPLEMENT_ACTTABLE( CWeaponImmolator );
@@ -95,16 +107,22 @@ IMPLEMENT_ACTTABLE( CWeaponImmolator );
 CWeaponImmolator::CWeaponImmolator( void )
 {
 	m_fMaxRange1 = 4096;
-	StopImmolating();
+	//StopImmolating();
+	isActive = false;		//Fix
 }
 
 void CWeaponImmolator::StartImmolating()
 {
+	//Fix
+	isActive = true;
+	SendWeaponAnim(ACT_VM_PRIMARYATTACK);
+
 	// Start the radius really tiny because we use radius == 0.0 to 
 	// determine whether the immolator is operating or not.
 	m_flBurnRadius = 0.1;
 	m_flTimeLastUpdatedRadius = gpGlobals->curtime;
-	SetThink( UpdateThink );
+	//SetThink( UpdateThink );
+	SetThink( &CWeaponImmolator::UpdateThink ); //Fix
 	SetNextThink( gpGlobals->curtime );
 
 	CSoundEnt::InsertSound( SOUND_DANGER, m_vecImmolatorTarget, 256, 5.0, GetOwner() );
@@ -112,6 +130,11 @@ void CWeaponImmolator::StartImmolating()
 
 void CWeaponImmolator::StopImmolating()
 {
+	//Fix
+	isActive = false;
+	StopWeaponSound(SINGLE);
+	SendWeaponAnim(ACT_VM_IDLE);
+
 	m_flBurnRadius = 0.0;
 	SetThink( NULL );
 	m_vecImmolatorTarget= IMMOLATOR_TARGET_INVALID;
@@ -128,6 +151,8 @@ void CWeaponImmolator::Precache( void )
 	BaseClass::Precache();
 }
 
+//Fix
+/*
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -140,6 +165,7 @@ void CWeaponImmolator::PrimaryAttack( void )
 		StartImmolating();
 	} 
 }
+*/
 
 //-----------------------------------------------------------------------------
 // This weapon is said to have Line of Sight when it CAN'T see the target, but
@@ -231,9 +257,12 @@ void CWeaponImmolator::Update()
 	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
 
 	Vector vecSrc;
-	Vector vecAiming;
+	//Vector vecAiming;
+	//Fix
+	Vector vecAiming, forward, right, up;
+	QAngle angle;
 
-	if( pOwner )
+	/*if (pOwner)
 	{
 		vecSrc	 = pOwner->Weapon_ShootPosition( );
 		vecAiming = pOwner->GetAutoaimVector(AUTOAIM_2DEGREES);
@@ -245,6 +274,22 @@ void CWeaponImmolator::Update()
 		vecSrc = pOwner->Weapon_ShootPosition( );
 		vecAiming = m_vecImmolatorTarget - vecSrc;
 		VectorNormalize( vecAiming );
+	}*/
+
+	//Fix
+	if (!pOwner)
+	{
+		CBaseCombatCharacter* pOwner = GetOwner();
+		vecSrc = pOwner->Weapon_ShootPosition();
+		vecAiming = m_vecImmolatorTarget - vecSrc;
+		VectorNormalize(vecAiming);
+	}
+	else
+	{
+		vecSrc = pOwner->Weapon_ShootPosition();
+		pOwner->GetVectors(&forward, &right, &up);
+		vecSrc += (forward * 8) + (right * 3) + (up * -2);
+		vecAiming = pOwner->GetAutoaimVector(AUTOAIM_2DEGREES);
 	}
 
 	trace_t	tr;
@@ -319,24 +364,91 @@ void CWeaponImmolator::Update()
 	else
 	{
 		// The attack beam struck some kind of entity directly.
+		//Fix
+		if (m_flBurnRadius > 16.0 && (tr.endpos - tr.startpos).Length() <= m_fMaxRange1)
+		{
+			ClearMultiDamage();
+			CTakeDamageInfo dmgInfo(this, this, 2, DMG_BURN);
+			tr.m_pEnt->DispatchTraceAttack(dmgInfo, forward, &tr);
+			ApplyMultiDamage();
+		}
 	}
 
 	m_flTimeLastUpdatedRadius = gpGlobals->curtime;
 
 	if( m_flBurnRadius >= MAX_BURN_RADIUS )
 	{
-		StopImmolating();
+		//StopImmolating();
+		//Fix
+		m_flBurnRadius = MAX_BURN_RADIUS;
 	}
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
+//Fix
 void CWeaponImmolator::ItemPostFrame( void )
+{
+	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
+	if (!pPlayer)
+		return;
+
+	static bool isCurrentlyFiring = false;
+	static float m_flNextAttackTime = 0;
+
+	if (pPlayer->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
+	{
+		StopImmolating();
+		if (isCurrentlyFiring)
+			WeaponSound(RELOAD);
+		isCurrentlyFiring = false;
+		return BaseClass::ItemPostFrame();
+	}
+
+	if ((pPlayer->m_nButtons & IN_ATTACK) && m_flNextPrimaryAttack < gpGlobals->curtime)
+	{
+		if (m_flNextAttackTime < gpGlobals->curtime)
+		{
+			pPlayer->RemoveAmmo(1, m_iPrimaryAmmoType);
+			m_flNextAttackTime = gpGlobals->curtime + 0.25;
+		}
+
+		if (!IsImmolating() && !isCurrentlyFiring)
+		{
+			if (pPlayer->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
+			{
+				StopImmolating();
+				WeaponSound(RELOAD);
+				isCurrentlyFiring = false;
+				return BaseClass::ItemPostFrame();
+			}
+
+			WeaponSound(SINGLE);
+			StartImmolating();
+			isCurrentlyFiring = true;
+		}
+	}
+
+	if (pPlayer->m_afButtonReleased & IN_ATTACK)
+	{
+		if (isCurrentlyFiring)
+			WeaponSound(RELOAD);
+		m_flNextAttackTime = 0.0f;
+		StopImmolating();
+		isCurrentlyFiring = false;
+		m_flNextPrimaryAttack = gpGlobals->curtime + 0.5;
+	}
+
+	//BaseClass::ItemPostFrame();
+}
+
+/*
+void CWeaponImmolator::ItemPostFrame(void)
 {
 	BaseClass::ItemPostFrame();
 }
-
+*/
 
 
 void CWeaponImmolator::ImmolationDamage( const CTakeDamageInfo &info, const Vector &vecSrcIn, float flRadius, int iClassIgnore )
@@ -347,10 +459,14 @@ void CWeaponImmolator::ImmolationDamage( const CTakeDamageInfo &info, const Vect
 
 	Vector vecSrc = vecSrcIn;
 
+	CEntitySphereQuery sphere(vecSrc, flRadius);			//Fix
+
 	// iterate on all entities in the vicinity.
-	for ( CEntitySphereQuery sphere( vecSrc, flRadius ); pEntity = sphere.GetCurrentEntity(); sphere.NextEntity() )
+	//for ( CEntitySphereQuery sphere( vecSrc, flRadius ); pEntity = sphere.GetCurrentEntity(); sphere.NextEntity() )
+	for (sphere; sphere.GetCurrentEntity(); sphere.NextEntity())		//Fix
 	{
 		CBaseCombatCharacter *pBCC;
+		pEntity = sphere.GetCurrentEntity();		//Fix
 
 		pBCC = pEntity->MyCombatCharacterPointer();
 

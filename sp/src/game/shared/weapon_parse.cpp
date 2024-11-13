@@ -76,11 +76,11 @@ extern itemFlags_t g_ItemFlags[7];
 
 static CUtlDict< FileWeaponInfo_t*, unsigned short > m_WeaponInfoDatabase;
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 // used to track whether or not two weapons have been mistakenly assigned the wrong slot
 bool g_bUsedWeaponSlots[MAX_WEAPON_SLOTS][MAX_WEAPON_POSITIONS] = { 0 };
 
-#endif
+//#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -411,8 +411,9 @@ void FileWeaponInfo_t::Parse( KeyValues *pKeyValuesData, const char *szWeaponNam
 	m_bBuiltRightHanded = ( pKeyValuesData->GetInt( "BuiltRightHanded", 1 ) != 0 ) ? true : false;
 	m_bAllowFlipping = ( pKeyValuesData->GetInt( "AllowFlipping", 1 ) != 0 ) ? true : false;
 	m_bMeleeWeapon = ( pKeyValuesData->GetInt( "MeleeWeapon", 0 ) != 0 ) ? true : false;
+	m_flViewModelFOV = pKeyValuesData->GetFloat("ViewModelFOV", 54.0f);
 
-#if defined(_DEBUG) && defined(HL2_CLIENT_DLL)
+#//if defined(_DEBUG) && defined(HL2_CLIENT_DLL)
 	// make sure two weapons aren't in the same slot & position
 	if ( iSlot >= MAX_WEAPON_SLOTS ||
 		iPosition >= MAX_WEAPON_POSITIONS )
@@ -428,7 +429,7 @@ void FileWeaponInfo_t::Parse( KeyValues *pKeyValuesData, const char *szWeaponNam
 		}
 		g_bUsedWeaponSlots[iSlot][iPosition] = true;
 	}
-#endif
+//#endif
 
 	// Primary ammo used
 	const char *pAmmo = pKeyValuesData->GetString( "primary_ammo", "None" );
@@ -459,6 +460,24 @@ void FileWeaponInfo_t::Parse( KeyValues *pKeyValuesData, const char *szWeaponNam
 				Q_strncpy( aShootSounds[i], soundname, MAX_WEAPON_STRING );
 			}
 		}
+	}
+	//Ironsight
+	// this just saves off the data in the script file for later use
+	KeyValues* pEt = pKeyValuesData->FindKey("ExpOffset");
+	if (pEt)
+	{
+		m_expOffset.x = pEt->GetFloat("x", 0.0f);
+		m_expOffset.y = pEt->GetFloat("y", 0.0f);
+		m_expOffset.z = pEt->GetFloat("z", 0.0f);
+
+		m_expOriOffset.x = pEt->GetFloat("xori", 0.0f);
+		m_expOriOffset.y = pEt->GetFloat("yori", 0.0f);
+		m_expOriOffset.z = pEt->GetFloat("zori", 0.0f);
+	}
+	else
+	{
+		m_expOffset = vec3_origin;
+		m_expOriOffset.Init();
 	}
 }
 

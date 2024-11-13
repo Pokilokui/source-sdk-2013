@@ -201,6 +201,13 @@ IMPLEMENT_CLIENTCLASS_DT(C_BaseAnimating, DT_BaseAnimating, CBaseAnimating)
 	RecvPropFloat( RECVINFO( m_fadeMaxDist ) ), 
 	RecvPropFloat( RECVINFO( m_flFadeScale ) ), 
 
+#ifdef GLOWS_ENABLE		//Adding Glow Effects
+	RecvPropBool(RECVINFO(m_bGlowEnabled)),
+	RecvPropFloat(RECVINFO(m_flGlowR)),
+	RecvPropFloat(RECVINFO(m_flGlowG)),
+	RecvPropFloat(RECVINFO(m_flGlowB)),
+#endif // GLOWS_ENABLE
+
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_BaseAnimating )
@@ -734,6 +741,15 @@ C_BaseAnimating::C_BaseAnimating() :
 	Q_memset(&m_mouth, 0, sizeof(m_mouth));
 	m_flCycle = 0;
 	m_flOldCycle = 0;
+
+#ifdef GLOWS_ENABLE		//Adding Glow Effects
+	m_flGlowR = 0.76f;
+	m_flGlowG = 0.76f;
+	m_flGlowB = 0.76f;
+	m_pGlowEffect = NULL;
+	m_bGlowEnabled = false;
+	m_bOldGlowEnabled = false;
+#endif // GLOWS_ENABLE
 }
 
 //-----------------------------------------------------------------------------
@@ -764,6 +780,11 @@ C_BaseAnimating::~C_BaseAnimating()
 		m_pAttachedTo->RemoveBoneAttachment( this );
 		m_pAttachedTo = NULL;
 	}
+
+#ifdef GLOWS_ENABLE		//Adding Glow Effects
+	DestroyGlowEffect();
+#endif // GLOWS_ENABLE
+
 }
 
 bool C_BaseAnimating::UsesPowerOfTwoFrameBufferTexture( void )
@@ -3309,7 +3330,22 @@ void C_BaseAnimating::ProcessMuzzleFlashEvent()
 		//FIXME: We should really use a named attachment for this
 		if ( m_Attachments.Count() > 0 )
 		{
-			Vector vAttachment;
+			Vector vAttachment, vAng;
+			QAngle angles;
+			GetAttachment(1, vAttachment, angles);
+			AngleVectors(angles, &vAng);
+			vAttachment += vAng * 2;
+
+			dlight_t* dl = effects->CL_AllocDlight(index);
+			dl->origin = vAttachment;
+			dl->color.r = 255;
+			dl->color.g = 192;
+			dl->color.b = 64;
+			dl->die = gpGlobals->curtime + 0.05f;
+			dl->radius = random->RandomFloat(245.0f, 256.0f);
+			dl->decay = 512.0f;
+			
+			/*Vector vAttachment;
 			QAngle dummyAngles;
 			GetAttachment( 1, vAttachment, dummyAngles );
 
@@ -3322,7 +3358,7 @@ void C_BaseAnimating::ProcessMuzzleFlashEvent()
 			el->color.r = 255;
 			el->color.g = 192;
 			el->color.b = 64;
-			el->color.exponent = 5;
+			el->color.exponent = 5;*/
 		}
 	}
 }
@@ -4127,10 +4163,24 @@ void C_BaseAnimating::FireObsoleteEvent( const Vector& origin, const QAngle& ang
 
 			if ( iAttachment != -1 && m_Attachments.Count() > iAttachment )
 			{
-				GetAttachment( iAttachment+1, attachOrigin, attachAngles );
+				/*GetAttachment(iAttachment + 1, attachOrigin, attachAngles);
 				int entId = render->GetViewEntity();
 				ClientEntityHandle_t hEntity = ClientEntityList().EntIndexToHandle( entId );
-				tempents->MuzzleFlash( attachOrigin, attachAngles, atoi( options ), hEntity, bFirstPerson );
+				tempents->MuzzleFlash( attachOrigin, attachAngles, atoi( options ), hEntity, bFirstPerson );*/
+
+				if (input->CAM_IsThirdPerson())																//Fix cs weapons
+				{
+					C_BaseCombatWeapon* pWeapon = GetActiveWeapon();
+					pWeapon->GetAttachment(iAttachment + 1, attachOrigin, attachAngles);
+				}
+				else
+				{
+					C_BasePlayer* pPlayer = C_BasePlayer::GetLocalPlayer();
+					CBaseViewModel* vm = pPlayer->GetViewModel();
+					vm->GetAttachment(iAttachment + 1, attachOrigin, attachAngles);
+					engine->GetViewAngles(attachAngles);
+				}
+				g_pEffects->MuzzleFlash(attachOrigin, attachAngles, 1.0, MUZZLEFLASH_TYPE_DEFAULT);
 			}
 		}
 		break;
@@ -4375,6 +4425,53 @@ void C_BaseAnimating::RagdollMoved( void )
 	InvalidatePhysicsRecursive( ANIMATION_CHANGED ); 
 }
 
+#ifdef GLOWS_ENABLE		//Adding Glow Effects
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void C_BaseAnimating::GetGlowEffectColor(float* r, float* g, float* b)
+{
+	//*r = 0.76f;
+	//*g = 0.76f;
+	//*b = 0.76f;
+	*r = m_flGlowR;
+	*g = m_flGlowG;
+	*b = m_flGlowB;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void C_BaseAnimating::UpdateGlowEffect(void)
+{
+	// destroy the existing effect
+	if (m_pGlowEffect)
+	{
+		DestroyGlowEffect();
+	}
+
+	// create a new effect
+	if (m_bGlowEnabled)
+	{
+		float r, g, b;
+		GetGlowEffectColor(&r, &g, &b);
+
+		m_pGlowEffect = new CGlowObject(this, Vector(r, g, b), 1.0, true);
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void C_BaseAnimating::DestroyGlowEffect(void)
+{
+	if (m_pGlowEffect)
+	{
+		delete m_pGlowEffect;
+		m_pGlowEffect = NULL;
+	}
+}
+#endif // GLOWS_ENABLE
 
 //-----------------------------------------------------------------------------
 // Purpose: My physics object has been updated, react or extract data
@@ -4517,6 +4614,10 @@ void C_BaseAnimating::OnPreDataChanged( DataUpdateType_t updateType )
 	BaseClass::OnPreDataChanged( updateType );
 
 	m_bLastClientSideFrameReset = m_bClientSideFrameReset;
+
+#ifdef GLOWS_ENABLE		//Adding Glow Effects
+	m_bOldGlowEnabled = m_bGlowEnabled;
+#endif // GLOWS_ENABLE
 }
 
 void C_BaseAnimating::ForceSetupBonesAtTime( matrix3x4_t *pBonesOut, float flTime )
@@ -4700,6 +4801,14 @@ bool C_BaseAnimating::InitAsClientRagdoll( const matrix3x4_t *pDeltaBones0, cons
 //-----------------------------------------------------------------------------
 void C_BaseAnimating::OnDataChanged( DataUpdateType_t updateType )
 {
+
+#ifdef GLOWS_ENABLE		//Adding Glow Effects
+	if (m_bOldGlowEnabled != m_bGlowEnabled)
+	{
+		UpdateGlowEffect();
+	}
+#endif // GLOWS_ENABLE
+
 	// don't let server change sequences after becoming a ragdoll
 	if ( m_pRagdoll && GetSequence() != m_nPrevSequence )
 	{

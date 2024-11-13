@@ -1131,7 +1131,7 @@ bool CBaseServerVehicle::HandlePassengerExit( CBaseCombatCharacter *pPassenger )
 				GetDrivableVehicle()->SetVehicleExitAnim( true, vecExitPoint );
 
 				// Re-deploy our weapon
-				if ( pPlayer && pPlayer->IsAlive() )
+				if (pPlayer && pPlayer->IsAlive())
 				{
 					if ( pPlayer->GetActiveWeapon() )
 					{

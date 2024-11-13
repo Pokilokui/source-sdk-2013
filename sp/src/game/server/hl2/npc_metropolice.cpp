@@ -18,10 +18,15 @@
 #include "hl2_player.h"
 #include "iservervehicle.h"
 #include "items.h"
+#include "time.h"
 #include "hl2_gamerules.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
+//extern ConVar *metropolice_skin;
+
+
 
 //#define SF_METROPOLICE_					0x00010000
 #define SF_METROPOLICE_SIMPLE_VERSION		0x00020000
@@ -572,26 +577,52 @@ bool CNPC_MetroPolice::OverrideMoveFacing( const AILocalMoveGoal_t &move, float 
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::Precache( void )
 {
-	if ( HasSpawnFlags( SF_NPC_START_EFFICIENT ) )
+	/*if (HasSpawnFlags(SF_NPC_START_EFFICIENT))
 	{
 		SetModelName( AllocPooledString("models/police_cheaple.mdl" ) );
 	}
 	else
 	{
 		SetModelName( AllocPooledString("models/police.mdl") );
-	}
+	}*/		
 
-	PrecacheModel( STRING( GetModelName() ) );
+	PrecacheModel("models/police.mdl");
+	PrecacheModel("models/police_cheaple.mdl");
+	PrecacheModel("models/metropolice/combine_normal_female.mdl");
+
+	//PrecacheModel( STRING( GetModelName() ) );
 
 	UTIL_PrecacheOther( "npc_manhack" );
 
 	PrecacheScriptSound( "NPC_Metropolice.Shove" );
 	PrecacheScriptSound( "NPC_MetroPolice.WaterSpeech" );
 	PrecacheScriptSound( "NPC_MetroPolice.HidingSpeech" );
+	PrecacheScriptSound( "NPC_MetroPolice.OnFireScream_Beta" ); // Fire scream
 	enginesound->PrecacheSentenceGroup( "METROPOLICE" );
 
 	BaseClass::Precache();
 }
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+/*void CNPC_MetroPolice::SelectModel()
+{
+	// Alyx is allowed to use multiple models, because she appears in the pod.
+	// She defaults to her normal model.
+	const char* szModel = STRING(GetModelName());
+	if (!szModel || !*szModel)
+	{
+		if (HasSpawnFlags(SF_NPC_START_EFFICIENT))
+		{
+			SetModelName(AllocPooledString("models/police_cheaple.mdl"));
+		}
+		else
+		{
+			SetModelName(AllocPooledString("models/police.mdl"));
+		}
+	}
+}*/
 
 
 //-----------------------------------------------------------------------------
@@ -614,6 +645,42 @@ bool CNPC_MetroPolice::CreateComponents()
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::Spawn( void )
 {
+	Precache();
+
+	ConVar* metropolice_skin = cvar->FindVar("metropolice_skin");
+
+	int random = 0;
+	const char* szModel = STRING(GetModelName());
+	if (!szModel || !*szModel)
+		if (HasSpawnFlags(SF_NPC_START_EFFICIENT))
+		{
+			SetModelName(AllocPooledString("models/police_cheaple.mdl"));
+		}
+	else if (CBaseEntity::GetModelName() == NULL_STRING && metropolice_skin->GetInt() == 0)
+	{
+		random = RandomInt(0, 1);
+		if (random == 1)
+		{
+			SetModelName(AllocPooledString("models/police.mdl"));
+		}
+		else if (random == 0)
+		{
+			SetModelName(AllocPooledString("models/metropolice/combine_normal_female.mdl"));
+		}
+	}
+	else if (metropolice_skin->GetInt() == 1)
+	{
+		SetModelName(AllocPooledString("models/police.mdl"));
+	}
+	else if (metropolice_skin->GetInt() == 2)
+	{
+		SetModelName(AllocPooledString("models/metropolice/combine_normal_female.mdl"));
+	}
+	else
+	{
+		SetModelName(CBaseEntity::GetModelName());
+	}
+
 	Precache();
 
 #ifdef _XBOX
@@ -4014,6 +4081,7 @@ int CNPC_MetroPolice::SelectSchedule( void )
 	if ( HasCondition(COND_METROPOLICE_ON_FIRE) )
 	{
 		m_Sentences.Speak( "METROPOLICE_ON_FIRE", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS );
+		EmitSound("NPC_MetroPolice.OnFireScream_Beta"); // Fire Scream
 		return SCHED_METROPOLICE_BURNING_STAND;
 	}
 

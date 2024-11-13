@@ -77,6 +77,7 @@
 // Projective textures
 #include "C_Env_Projected_Texture.h"
 
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -1911,9 +1912,19 @@ const char *COM_GetModDirectory();
 // This renders the entire 3D view.
 void CViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatToDraw )
 {
+	ConVar* mat_specular_seamless = cvar->FindVar("mat_specular_seamless"); //seamless cubemaps convar
+
 	m_UnderWaterOverlayMaterial.Shutdown();					// underwater view will set
 
 	m_CurrentView = view;
+
+	//Should add seamless cubemaps but I'm not sure it works
+	if (mat_specular_seamless->GetBool())
+	{
+		if (building_cubemaps.GetBool())
+			m_CurrentView.fov = RAD2DEG(2.0f * atanf(64.0f / (64 - 0.5f)));
+	}
+
 
 	C_BaseAnimating::AutoAllowBoneAccess boneaccess( true, true );
 	VPROF( "CViewRender::RenderView" );
@@ -4983,6 +4994,10 @@ void CShadowDepthView::Draw()
 		render->Push3DView( (*this), VIEW_CLEAR_DEPTH, m_pRenderTarget, GetFrustum() );
 	}
 
+	pRenderContext.GetFrom(materials);
+	pRenderContext->PushRenderTargetAndViewport(m_pRenderTarget, m_pDepthTexture, 0, 0, m_pDepthTexture->GetMappingWidth(), m_pDepthTexture->GetMappingWidth());
+	pRenderContext.SafeRelease();
+
 	SetupCurrentView( origin, angles, VIEW_SHADOW_DEPTH_TEXTURE );
 
 	MDLCACHE_CRITICAL_SECTION();
@@ -5026,6 +5041,8 @@ void CShadowDepthView::Draw()
 		//Resolve() the depth texture here. Before the pop so the copy will recognize that the resolutions are the same
 		pRenderContext->CopyRenderTargetToTextureEx( m_pDepthTexture, -1, NULL, NULL );
 	}
+
+	pRenderContext->PopRenderTargetAndViewport();
 
 	render->PopView( GetFrustum() );
 

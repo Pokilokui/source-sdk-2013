@@ -6,6 +6,8 @@
 //=============================================================================//
 
 #include "cbase.h"
+#include "hl2_player.h"
+#include "basecombatweapon.h"
 #include "gamerules.h"
 #include "player.h"
 #include "items.h"
@@ -25,15 +27,44 @@ ConVar	sk_healthcharger( "sk_healthcharger","0" );
 class CHealthKit : public CItem
 {
 public:
-	DECLARE_CLASS( CHealthKit, CItem );
+		DECLARE_CLASS( CHealthKit, CItem );
+		DECLARE_SERVERCLASS()
+		DECLARE_DATADESC()
 
-	void Spawn( void );
-	void Precache( void );
-	bool MyTouch( CBasePlayer *pPlayer );
+		void Spawn( void );
+		void Precache( void );
+		bool MyTouch( CBasePlayer *pPlayer );
+
+		void Think(void)
+		{
+			healthKitPos = GetAbsOrigin();
+			float distance = CollisionProp()->CalcDistanceFromPoint(UTIL_GetLocalPlayer()->GetAbsOrigin());
+			if (distance < 20)
+			{
+				bool IsTouching = MyTouch(UTIL_GetLocalPlayer());
+				if (IsTouching)
+				{
+					UTIL_Remove(this);
+					SetNextThink(NULL);
+				}
+			}
+			SetNextThink(gpGlobals->curtime + TICK_INTERVAL);
+		}
+
+		CNetworkVar(Vector, healthKitPos);
 };
 
 LINK_ENTITY_TO_CLASS( item_healthkit, CHealthKit );
 PRECACHE_REGISTER(item_healthkit);
+
+BEGIN_DATADESC(CHealthKit)
+DEFINE_FIELD(healthKitPos, FIELD_POSITION_VECTOR),
+DEFINE_THINKFUNC(Think),
+END_DATADESC()
+
+IMPLEMENT_SERVERCLASS_ST(CHealthKit, DT_HealthKit)
+SendPropVector(SENDINFO(healthKitPos), -1, SPROP_COORD),
+END_SEND_TABLE()
 
 
 //-----------------------------------------------------------------------------
@@ -43,7 +74,9 @@ void CHealthKit::Spawn( void )
 {
 	Precache();
 	SetModel( "models/items/healthkit.mdl" );
-
+	healthKitPos = GetAbsOrigin();
+	SetThink(&CHealthKit::Think);
+	SetNextThink(gpGlobals->curtime);
 	BaseClass::Spawn();
 }
 
@@ -64,27 +97,27 @@ void CHealthKit::Precache( void )
 // Input  : *pPlayer - 
 // Output : 
 //-----------------------------------------------------------------------------
-bool CHealthKit::MyTouch( CBasePlayer *pPlayer )
+bool CHealthKit::MyTouch(CBasePlayer* pPlayer)
 {
-	if ( pPlayer->TakeHealth( sk_healthkit.GetFloat(), DMG_GENERIC ) )
+	if (pPlayer->TakeHealth(sk_healthkit.GetFloat(), DMG_GENERIC))
 	{
-		CSingleUserRecipientFilter user( pPlayer );
+		CSingleUserRecipientFilter user(pPlayer);
 		user.MakeReliable();
 
-		UserMessageBegin( user, "ItemPickup" );
-			WRITE_STRING( GetClassname() );
+		UserMessageBegin(user, "ItemPickup");
+		WRITE_STRING(GetClassname());
 		MessageEnd();
 
-		CPASAttenuationFilter filter( pPlayer, "HealthKit.Touch" );
-		EmitSound( filter, pPlayer->entindex(), "HealthKit.Touch" );
+		CPASAttenuationFilter filter(pPlayer, "HealthKit.Touch");
+		EmitSound(filter, pPlayer->entindex(), "HealthKit.Touch");
 
-		if ( g_pGameRules->ItemShouldRespawn( this ) )
+		if (g_pGameRules->ItemShouldRespawn(this))
 		{
 			Respawn();
 		}
 		else
 		{
-			UTIL_Remove(this);	
+			UTIL_Remove(this);
 		}
 
 		return true;
@@ -101,11 +134,34 @@ class CHealthVial : public CItem
 {
 public:
 	DECLARE_CLASS( CHealthVial, CItem );
+	DECLARE_SERVERCLASS()
+	DECLARE_DATADESC()
+
+	void Think(void)
+	{
+		healthVialPos = GetAbsOrigin();
+		float distance = CollisionProp()->CalcDistanceFromPoint(UTIL_GetLocalPlayer()->GetAbsOrigin());
+		if (distance < 20)
+		{
+			bool IsTouching = MyTouch(UTIL_GetLocalPlayer());
+			if (IsTouching)
+			{
+				UTIL_Remove(this);
+				SetNextThink(NULL);
+			}
+		}
+		SetNextThink(gpGlobals->curtime + TICK_INTERVAL);
+	}
+
+	CNetworkVar(Vector, healthVialPos);
 
 	void Spawn( void )
 	{
 		Precache();
 		SetModel( "models/healthvial.mdl" );
+		healthVialPos = GetAbsOrigin();
+		SetThink(&CHealthVial::Think);
+		SetNextThink(gpGlobals->curtime);
 
 		BaseClass::Spawn();
 	}
@@ -146,6 +202,15 @@ public:
 		return false;
 	}
 };
+
+BEGIN_DATADESC(CHealthVial)
+DEFINE_FIELD(healthVialPos, FIELD_POSITION_VECTOR),
+DEFINE_THINKFUNC(Think),
+END_DATADESC()
+
+IMPLEMENT_SERVERCLASS_ST(CHealthVial, DT_HealthVial)
+SendPropVector(SENDINFO(healthVialPos), -1, SPROP_COORD),
+END_SEND_TABLE()
 
 LINK_ENTITY_TO_CLASS( item_healthvial, CHealthVial );
 PRECACHE_REGISTER( item_healthvial );

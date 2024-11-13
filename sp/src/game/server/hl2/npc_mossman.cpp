@@ -85,6 +85,18 @@ int CNPC_Mossman::GetSoundInterests ( void )
 	return	NULL;
 }
 
+/*
+void CNPC_Mossman::SelectModel()
+{
+	// Alyx is allowed to use multiple models, because she appears in the pod.
+	// She defaults to her normal model.
+	const char* szModel = STRING(GetModelName());
+	if (!szModel || !*szModel)
+	{
+		SetModelName(AllocPooledString("models/mossman.mdl"));
+	}
+}
+*/
 //-----------------------------------------------------------------------------
 // Spawn
 //-----------------------------------------------------------------------------
@@ -94,7 +106,10 @@ void CNPC_Mossman::Spawn()
 
 	BaseClass::Spawn();
 
-	SetModel( "models/mossman.mdl" );
+	SetModel( STRING( GetModelName() ) );
+
+	//SetModel( "models/mossman.mdl" );
+	//SetModel("models/mossman_episodic.mdl");
 
 	SetHullType(HULL_HUMAN);
 	SetHullSizeNormal();
@@ -117,12 +132,31 @@ void CNPC_Mossman::Spawn()
 //-----------------------------------------------------------------------------
 // Precache - precaches all resources this NPC needs
 //-----------------------------------------------------------------------------
+/*
 void CNPC_Mossman::Precache()
 {
 	PrecacheModel( "models/mossman.mdl" );
+	PrecacheModel( "models/mossman_episodic.mdl" );
+	//PrecacheModel( STRING( GetModelName() ) );
 	
 	BaseClass::Precache();
 }	
+
+*/
+
+void CNPC_Mossman::Precache()
+{
+	if (!Q_strnicmp(STRING(gpGlobals->mapname), "ep1", 3) || !Q_strnicmp(STRING(gpGlobals->mapname), "ep2", 3))
+		SetModelName(AllocPooledString("models/mossman_episodic.mdl"));
+	else if (CBaseEntity::GetModelName() == NULL_STRING)
+		SetModelName(AllocPooledString("models/mossman.mdl"));
+	else
+		SetModelName(CBaseEntity::GetModelName());
+
+	PrecacheModel(STRING(GetModelName()));
+
+	BaseClass::Precache();
+}
 
 //=========================================================
 // Purpose:

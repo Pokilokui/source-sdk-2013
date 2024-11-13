@@ -162,6 +162,8 @@ citizen_expression_list_t AngryExpressions[STATES_WITH_EXPRESSIONS] =
 	{ "scenes/Expressions/citizen_angry_combat_01.vcd" },
 };
 
+CUtlVector<CNPC_Citizen*>	squadMembers;		//Friendly Fire
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 
@@ -2294,6 +2296,36 @@ int CNPC_Citizen::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	return BaseClass::OnTakeDamage_Alive( newInfo );
 }
 
+void CNPC_Citizen::Event_Killed(const CTakeDamageInfo& info)  //Friendly fire void function
+{
+	ConVar* friendly_fire = cvar->FindVar("friendly_fire");
+
+	if (friendly_fire->GetInt() == 2)
+	{
+		if (info.GetAttacker()->IsPlayer())
+		{
+			SetDefaultRelationship(Classify(), CLASS_PLAYER, D_HT, 99);
+
+			CAI_PlayerAlly* pMourner = dynamic_cast<CAI_PlayerAlly*>(FindSpeechTarget(AIST_NPCS));
+			if (pMourner)
+			{
+				pMourner->SpeakIfAllowed(TLK_BETRAYED);
+			}
+
+			CAI_Squad* pPlayerSquad = g_AI_SquadManager.FindSquad(MAKE_STRING(PLAYER_SQUADNAME));
+			if (pPlayerSquad)
+			{
+				for (int i = 0; i < squadMembers.Count(); i++)
+				{
+					CNPC_Citizen* pCitizen = squadMembers.Element(i);
+					pPlayerSquad->RemoveFromSquad(pCitizen);
+				}
+			}
+		}
+	}
+	return BaseClass::Event_Killed(info);
+}
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 bool CNPC_Citizen::IsCommandable() 
@@ -2724,6 +2756,8 @@ void CNPC_Citizen::AddToPlayerSquad()
 	FixupPlayerSquad();
 
 	SetCondition( COND_PLAYER_ADDED_TO_SQUAD );
+
+	squadMembers.AddToTail(this);		//Friendly Fire
 }
 
 //-----------------------------------------------------------------------------
@@ -2746,6 +2780,8 @@ void CNPC_Citizen::RemoveFromPlayerSquad()
 
 	// Don't evaluate the player squad for 2 seconds. 
 	gm_PlayerSquadEvaluateTimer.Set( 2.0 );
+
+	squadMembers.FindAndRemove(this);		//Friendly Fire
 }
 
 //-----------------------------------------------------------------------------

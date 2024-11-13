@@ -45,7 +45,8 @@ public:
 
 	float	GetFireRate( void ) { return 0.075f; }	// 13.3hz
 	int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
-	int		WeaponRangeAttack2Condition( float flDot, float flDist );
+	//int		WeaponRangeAttack2Condition( float flDot, float flDist );
+	int WeaponRangeAttack2Condition(); // Restore Combine Elite Soldiers's ability to use alt-fire smg1
 	Activity	GetPrimaryAttackActivity( void );
 
 	virtual const Vector& GetBulletSpread( void )
@@ -131,6 +132,15 @@ acttable_t	CWeaponSMG1::m_acttable[] =
 	{ ACT_RANGE_AIM_LOW,			ACT_RANGE_AIM_SMG1_LOW,			false },
 	{ ACT_RELOAD_LOW,				ACT_RELOAD_SMG1_LOW,			false },
 	{ ACT_GESTURE_RELOAD,			ACT_GESTURE_RELOAD_SMG1,		true },
+
+	{ ACT_HL2MP_IDLE,                    ACT_HL2MP_IDLE_SMG1,                    false },
+	{ ACT_HL2MP_RUN,                    ACT_HL2MP_RUN_SMG1,                    false },
+	{ ACT_HL2MP_IDLE_CROUCH,            ACT_HL2MP_IDLE_CROUCH_SMG1,            false },
+	{ ACT_HL2MP_WALK_CROUCH,            ACT_HL2MP_WALK_CROUCH_SMG1,            false },
+	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,    ACT_HL2MP_GESTURE_RANGE_ATTACK_SMG1,    false },
+	{ ACT_HL2MP_GESTURE_RELOAD,            ACT_GESTURE_RELOAD_SMG1,        false },
+	{ ACT_HL2MP_JUMP,                    ACT_HL2MP_JUMP_SMG1,                    false },
+	{ ACT_RANGE_ATTACK1,                ACT_RANGE_ATTACK_SMG1,                false },
 };
 
 IMPLEMENT_ACTTABLE(CWeaponSMG1);
@@ -254,6 +264,50 @@ void CWeaponSMG1::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatChar
 		}
 		break;
 		*/
+	
+	// Restore Combine Elite Soldiers's ability to use alt-fire smg1
+	case EVENT_WEAPON_AR2_ALTFIRE:
+	{
+		CAI_BaseNPC* npc = pOperator->MyNPCPointer();
+
+		Vector vecShootOrigin, vecShootDir;
+		vecShootOrigin = pOperator->Weapon_ShootPosition();
+		//vecShootDir = npc->GetShootEnemyDir( vecShootOrigin );
+
+		//Checks if it can fire the grenade
+		WeaponRangeAttack2Condition();
+
+		Vector vecThrow = m_vecTossVelocity;
+
+		//If on the rare case the vector is 0 0 0, cancel for avoid launching the grenade without speed
+		//This should be on WeaponRangeAttack2Condition(), but for some unknown reason return CASE_NONE
+		//doesn't stop the launch
+		if (vecThrow == Vector(0, 0, 0)) {
+			break;
+		}
+
+		CGrenadeAR2* pGrenade = (CGrenadeAR2*)Create("grenade_ar2", vecShootOrigin, vec3_angle, npc);
+		pGrenade->SetAbsVelocity(vecThrow);
+		pGrenade->SetLocalAngularVelocity(RandomAngle(-400, 400)); //tumble in air
+		pGrenade->SetMoveType(MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_BOUNCE);
+
+		pGrenade->SetThrower(GetOwner());
+
+		pGrenade->SetGravity(0.5); // lower gravity since grenade is aerodynamic and engine doesn't know it.
+
+		pGrenade->SetDamage(sk_plr_dmg_smg1_grenade.GetFloat());
+
+		if (g_pGameRules->IsSkillLevel(SKILL_HARD))
+		{
+			m_flNextGrenadeCheck = gpGlobals->curtime + RandomFloat(2, 3);
+		}
+		else {
+			m_flNextGrenadeCheck = gpGlobals->curtime + 6;// wait six seconds before even looking again to see if a grenade can be thrown.
+		}
+
+		m_iClip2--;
+	}
+	break;
 
 	default:
 		BaseClass::Operator_HandleAnimEvent( pEvent, pOperator );
@@ -394,11 +448,12 @@ void CWeaponSMG1::SecondaryAttack( void )
 //			flDist - 
 // Output : int
 //-----------------------------------------------------------------------------
-int CWeaponSMG1::WeaponRangeAttack2Condition( float flDot, float flDist )
+//int CWeaponSMG1::WeaponRangeAttack2Condition( float flDot, float flDist )
+int CWeaponSMG1::WeaponRangeAttack2Condition()		// Restore Combine Elite Soldiers's ability to use alt-fire smg1
 {
 	CAI_BaseNPC *npcOwner = GetOwner()->MyNPCPointer();
 
-	return COND_NONE;
+	//return COND_NONE;		// Restore Combine Elite Soldiers's ability to use alt-fire smg1
 
 /*
 	// --------------------------------------------------------

@@ -919,9 +919,9 @@ int C_PropAirboat::DrawWake( void )
 // Input  : flags - 
 // Output : int
 //-----------------------------------------------------------------------------
-int C_PropAirboat::DrawModel( int flags )
+int C_PropAirboat::DrawModel(int flags)
 {
-	if ( BaseClass::DrawModel( flags ) == false )
+	if (BaseClass::DrawModel(flags) == false)
 		return 0;
 	
 	if ( !m_bReadyToDraw )

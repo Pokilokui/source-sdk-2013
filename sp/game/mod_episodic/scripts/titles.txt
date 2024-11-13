@@ -79,32 +79,22 @@ $fadeout 1.5
 
 GAMEOVER_ALLY
 {
-#HL2_GameOver_Ally
+#MOD_EPISODIC_GameOver_Ally
 }
 
 GAMEOVER_OBJECT
 {
-#HL2_GameOver_Object
+#MOD_EPISODIC_GameOver_Object
 }
 
 GAMEOVER_TIMER
 {
-#HL2_GameOver_Timer
+#MOD_EPISODIC_GameOver_Timer
 }
 
 GAMEOVER_STUCK
 {
-#HL2_GameOver_Stuck
-}
-
-GAMEOVER_ALYXDEAD
-{
-#Episodic_GameOver_AlyxDead
-}
-
-GAMEOVER_ALYXLEFT
-{
-#EP2_GameOver_AlyxLeft
+#MOD_EPISODIC_GameOver_Stuck
 }
 
 
@@ -118,49 +108,150 @@ $fadein 0.01
 $holdtime 3.5
 $position -1 0.58
 
-EP2_CHAPTER1_TITLE
+CHAPTER1_TITLE
 {
-#ep2_Chapter1_Title
+#MOD_EPISODIC_Chapter1_Title
 }
 
-EP2_CHAPTER2_TITLE
+CHAPTER2_TITLE
 {
-#ep2_Chapter2_Title
+#MOD_EPISODIC_Chapter2_Title
 }
 
-EP2_CHAPTER3_TITLE
+CHAPTER3_TITLE
 {
-#ep2_Chapter3_Title
+#MOD_EPISODIC_Chapter3_Title
 }
 
-EP2_CHAPTER4_TITLE
+CHAPTER4_TITLE
 {
-#ep2_Chapter4_Title
+#MOD_EPISODIC_Chapter4_Title
 }
 
-EP2_CHAPTER5_TITLE
+CHAPTER5_TITLE
 {
-#ep2_Chapter5_Title
+#MOD_EPISODIC_Chapter5_Title
 }
 
-EP2_CHAPTER6_TITLE
+CHAPTER6_TITLE
 {
-#ep2_Chapter6_Title
+#MOD_EPISODIC_Chapter6_Title
 }
 
-EP2_CHAPTER7_TITLE
+CHAPTER7_TITLE
 {
-#ep2_Chapter7_Title
+#MOD_EPISODIC_Chapter7_Title
 }
 
-EP2_CHAPTER8_TITLE
+CHAPTER8_TITLE
 {
-#ep2_Chapter8_Title
+#MOD_EPISODIC_Chapter8_Title
 }
 
-EP2_CHAPTER9_TITLE
+CHAPTER9_TITLE
 {
-#ep2_Chapter9_Title
+#MOD_EPISODIC_Chapter9_Title
+}
+
+CHAPTER9A_TITLE
+{
+#MOD_EPISODIC_Chapter9a_Title
+}
+
+
+CHAPTER10_TITLE
+{
+#MOD_EPISODIC_Chapter10_Title
+}
+
+CHAPTER11_TITLE
+{
+#MOD_EPISODIC_Chapter11_Title
+}
+
+CHAPTER12_TITLE
+{
+#MOD_EPISODIC_Chapter12_Title
+}
+
+CHAPTER13_TITLE
+{
+#MOD_EPISODIC_Chapter13_Title
+}
+
+CHAPTER14_TITLE
+{
+#MOD_EPISODIC_Chapter14_Title
+}
+
+CHAPTER15_TITLE
+{
+#MOD_EPISODIC_Chapter15_Title
+}
+
+CHAPTER16_TITLE
+{
+#MOD_EPISODIC_Chapter16_Title
+}
+
+CHAPTER17_TITLE
+{
+#MOD_EPISODIC_Chapter18_Title
+}
+
+CHAPTER18_TITLE
+{
+#MOD_EPISODIC_Chapter18_Title
+}
+
+CHAPTER19_TITLE
+{
+#MOD_EPISODIC_Chapter19_Title
+}
+
+CHAPTER20_TITLE
+{
+#MOD_EPISODIC_Chapter20_Title
+}
+
+CHAPTER21_TITLE
+{
+#MOD_EPISODIC_Chapter21_Title
+}
+
+CHAPTER22_TITLE
+{
+#MOD_EPISODIC_Chapter22_Title
+}
+
+CHAPTER23_TITLE
+{
+#MOD_EPISODIC_Chapter23_Title
+}
+
+CHAPTER24_TITLE
+{
+#MOD_EPISODIC_Chapter24_Title
+}
+
+CHAPTER25_TITLE
+{
+#MOD_EPISODIC_Chapter25_Title
+}
+
+CHAPTER26_TITLE
+{
+#MOD_EPISODIC_Chapter26_Title
+}
+
+CHAPTER27_TITLE
+{
+#MOD_EPISODIC_Chapter27_Title
+}
+
+CHAPTER28_TITLE
+{
+#MOD_EPISODIC_Chapter28_Title
 }
 
 
@@ -174,25 +265,25 @@ $color2 240 110 0
 // This is the time it takes to fade each character
 $fadein 0.00
 // This is the amount of time the highlight lags behind the leading edge of the text
-$fxtime 0.0
+$fxtime 0.15
 // How long to hold the message on the screen (after it scans out)
-$holdtime 0.01
+$holdtime 1.0
 // How long it takes to fade out the message after holding
-$fadeout 0.01
+$fadeout 0.25
 
 $boxsize 0.4
 $boxcolor 31 31 31 127
 
 GAMESAVING_360
 {
-#HL2_Saving
+#MOD_EPISODIC_Saved
 }
 
 $position -1 0.65
 
 GAMESAVING
 {
-#HL2_Saving
+#MOD_EPISODIC_Saved
 }
 
 // In-Game messages
@@ -219,14 +310,14 @@ $clearmessage GAMESAVING
 
 GAMESAVED_360
 {
-#HL2_Saved
+#MOD_EPISODIC_Saved
 }
 
 $position -1 0.65
 
 GAMESAVED
 {
-#HL2_Saved
+#MOD_EPISODIC_Saved
 }
 
 $clearmessage 0

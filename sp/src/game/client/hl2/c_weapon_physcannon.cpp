@@ -11,6 +11,8 @@
 #include "particles_localspace.h"
 #include "view.h"
 #include "particles_attractor.h"
+#include "dlight.h"
+#include "r_efx.h"
 
 class C_WeaponPhysCannon: public C_BaseHLCombatWeapon
 {
@@ -221,6 +223,24 @@ int C_WeaponPhysCannon::DrawModel( int flags )
 		return 0;
 
 	m_bWasUpgraded = true;
+
+	dlight_t* dl[3];
+	for (int i = 0; i < 3; i++)
+	{
+		dl[i] = effects->CL_AllocDlight(index);
+		dl[i]->origin = vec3_origin;
+		dl[i]->color.r = 159;
+		dl[i]->color.g = 255;
+		dl[i]->color.b = 255;
+		dl[i]->color.exponent = -2;
+		dl[i]->die = gpGlobals->curtime + 0.05f;
+		dl[i]->radius = random->RandomFloat(254.0f / (i + 1), 256.0f / (i + 1));
+		dl[i]->decay = 512.0f;
+		dl[i]->style = 1;
+	}
+
+
+		
 
 	// Create the particle emitter if it's not already
 	if ( SetupEmitter() )

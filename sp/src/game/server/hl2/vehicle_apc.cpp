@@ -490,7 +490,7 @@ void CPropAPC::Event_Killed( const CTakeDamageInfo &info )
 
 	UTIL_ScreenShake( vecAbsPoint, 25.0, 150.0, 1.0, 750.0f, SHAKE_START );
 
-	if( hl2_episodic.GetBool() )
+	if (hl2_episodic.GetBool())
 	{
 		// EP1 perf hit
 		Ignite( 6, false );

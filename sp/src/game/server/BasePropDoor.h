@@ -187,6 +187,8 @@ private:
 	string_t m_SoundMoving;
 	string_t m_SoundOpen;
 	string_t m_SoundClose;
+	//string_t m_SoundKickOpen;
+	//string_t m_SoundKickFail;
 
 	// dvs: FIXME: can we remove m_flSpeed from CBaseEntity?
 	//float m_flSpeed;			// Rotation speed when opening or closing in degrees per second.
@@ -209,6 +211,25 @@ private:
 	COutputEvent m_OnClose;					// Triggered when the door is told to close.
 	COutputEvent m_OnOpen;					// Triggered when the door is told to open.
 	COutputEvent m_OnLockedUse;				// Triggered when the user tries to open a locked door.
+	//COutputEvent m_OnBroken;				// Triggered when the door gets broken (SMOD)
+	//COutputEvent m_OnKickFail;				// Triggered when the door gets kicked, but not broken (SMOD)
+
+//HUMAN ERROR: (SMOD)
+/*public:
+
+	bool AreWeLocked(void);
+	bool IsMyDoorLock(CBaseEntity* pLock);
+	void BreakDoors(Vector vecOrigin, AngularImpulse angImpulse);
+	void BreakDoor(Vector vecOrigin, AngularImpulse angImpulse);
+	void KickFail(void);
+	void PlayBreakOpenSound(void) {
+		EmitSound( STRING( m_SoundKickOpen ) );
+	}
+	void PlayBreakFailSound(void) {
+		EmitSound( STRING( m_SoundKickFail ) );
+	}
+
+	CBasePropDoor* HLSS_GetMaster(void) { return m_hMaster; }*/
 };
 
 

@@ -511,6 +511,28 @@ void CBasePlayer::CreateViewModel( int index /*=0*/ )
 }
 
 //-----------------------------------------------------------------------------
+// Purpose: c_hands
+//-----------------------------------------------------------------------------
+void CBasePlayer::CreateHandModel(int index, int iOtherVm)
+{
+	Assert(index >= 0 && index < MAX_VIEWMODELS && iOtherVm >= 0 && iOtherVm < MAX_VIEWMODELS);
+
+	if (GetViewModel(index))
+		return;
+
+	CBaseViewModel* vm = (CBaseViewModel*)CreateEntityByName("hand_viewmodel");
+	if (vm)
+	{
+		vm->SetAbsOrigin(GetAbsOrigin());
+		vm->SetOwner(this);
+		vm->SetIndex(index);
+		DispatchSpawn(vm);
+		vm->FollowEntity(GetViewModel(iOtherVm), true);
+		m_hViewModel.Set(index, vm);
+	}
+}
+
+//-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
 void CBasePlayer::DestroyViewModels( void )
@@ -1746,6 +1768,9 @@ void CBasePlayer::Event_Dying( const CTakeDamageInfo& info )
 	angles.z = 0;
 	
 	SetLocalAngles( angles );
+
+	CreateRagdollEntity();				//First person ragdoll
+	BecomeRagdollOnClient(vec3_origin);	//
 
 	SetThink(&CBasePlayer::PlayerDeathThink);
 	SetNextThink( gpGlobals->curtime + 0.1f );
@@ -4983,6 +5008,7 @@ void CBasePlayer::Spawn( void )
 	enginesound->SetPlayerDSP( user, 0, false );
 
 	CreateViewModel();
+	CreateHandModel();	//c_hands
 
 	SetCollisionGroup( COLLISION_GROUP_PLAYER );
 
@@ -5540,7 +5566,7 @@ void CBasePlayer::LeaveVehicle( const Vector &vecExitPoint, const QAngle &vecExi
 	pVehicle->SetPassenger(nRole, NULL);
 
 	// Re-deploy our weapon
-	if ( IsAlive() )
+	if (IsAlive())
 	{
 		if ( GetActiveWeapon() && GetActiveWeapon()->IsWeaponVisible() == false )
 		{
@@ -6028,6 +6054,7 @@ static void CreateJeep( CBasePlayer *pPlayer )
 		pJeep->KeyValue( "solid", "6" );
 		pJeep->KeyValue( "targetname", "jeep" );
 		pJeep->KeyValue( "vehiclescript", "scripts/vehicles/jeep_test.txt" );
+		pJeep->KeyValue("enablegun", "1");
 		DispatchSpawn( pJeep );
 		pJeep->Activate();
 		pJeep->Teleport( &vecOrigin, &vecAngles, NULL );
@@ -6148,9 +6175,13 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		GiveAmmo( 5,	"grenade");
 		GiveAmmo( 32,	"357" );
 		GiveAmmo( 16,	"XBowBolt" );
+		GiveAmmo( 5,	"SLAM" );
+		GiveAmmo( 5,	"molotov" );
+		GiveAmmo( 5,	"FlareRound" );
 #ifdef HL2_EPISODIC
 		GiveAmmo( 5,	"Hopwire" );
-#endif		
+#endif	
+		GiveNamedItem( "weapon_stunstick" );
 		GiveNamedItem( "weapon_smg1" );
 		GiveNamedItem( "weapon_frag" );
 		GiveNamedItem( "weapon_crowbar" );
@@ -6162,6 +6193,20 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		GiveNamedItem( "weapon_rpg" );
 		GiveNamedItem( "weapon_357" );
 		GiveNamedItem( "weapon_crossbow" );
+		GiveNamedItem( "weapon_alyxgun" );
+		GiveNamedItem( "weapon_ak47" );
+		GiveNamedItem( "weapon_hopwire" );
+		GiveNamedItem( "weapon_gauss" );
+		GiveNamedItem( "weapon_egon" );
+		GiveNamedItem( "weapon_physgun" );
+		GiveNamedItem( "weapon_slam" );
+		GiveNamedItem( "weapon_flaregun" );
+		GiveNamedItem( "weapon_molotov" );
+		GiveNamedItem( "weapon_binoculars" );
+		GiveNamedItem( "weapon_oicw" );
+		GiveNamedItem( "weapon_stickylauncher" );
+		GiveNamedItem( "weapon_cguard" );
+
 #ifdef HL2_EPISODIC
 		// GiveNamedItem( "weapon_magnade" );
 #endif

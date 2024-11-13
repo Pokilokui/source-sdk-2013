@@ -111,7 +111,14 @@ END_DATADESC()
 //-----------------------------------------------------------------------------
 void CNPC_Barney::SelectModel()
 {
-	SetModelName( AllocPooledString( BARNEY_MODEL ) );
+	if (!Q_strnicmp(STRING(gpGlobals->mapname), "ep1", 3) || !Q_strnicmp(STRING(gpGlobals->mapname), "ep2", 3))
+		SetModelName(AllocPooledString("models/barney_ep1.mdl"));
+	else if (CBaseEntity::GetModelName() == NULL_STRING)
+		SetModelName(AllocPooledString("models/barney.mdl"));
+	else
+		SetModelName(CBaseEntity::GetModelName());
+	
+	//SetModelName( AllocPooledString( BARNEY_MODEL ) );
 }
 
 //-----------------------------------------------------------------------------

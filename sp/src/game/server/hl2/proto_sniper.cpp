@@ -292,10 +292,10 @@ private:
 	void InputStopSweeping( inputdata_t &inputdata );
 	void InputProtectTarget( inputdata_t &inputdata );
 
-#if HL2_EPISODIC
+/*#if HL2_EPISODIC
 	void InputSetPaintInterval( inputdata_t &inputdata );
 	void InputSetPaintIntervalVariance( inputdata_t &inputdata );
-#endif
+#endif*/
 
 	void LaserOff( void );
 	void LaserOn( const Vector &vecTarget, const Vector &vecDeviance );
@@ -450,10 +450,10 @@ BEGIN_DATADESC( CProtoSniper )
 	DEFINE_INPUTFUNC( FIELD_STRING, "StopSweeping", InputStopSweeping ),
 	DEFINE_INPUTFUNC( FIELD_STRING, "ProtectTarget", InputProtectTarget ),
 
-#if HL2_EPISODIC
+/*#if HL2_EPISODIC
 	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetPaintInterval", InputSetPaintInterval ),
 	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetPaintIntervalVariance", InputSetPaintIntervalVariance ),
-#endif
+#endif*/
 
 	// Outputs
 	DEFINE_OUTPUT( m_OnShotFired, "OnShotFired" ),
@@ -1124,7 +1124,7 @@ void CProtoSniper::InputProtectTarget( inputdata_t &inputdata )
 
 
 
-#if HL2_EPISODIC
+/*#if HL2_EPISODIC
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 void CProtoSniper::InputSetPaintInterval( inputdata_t &inputdata )
@@ -1139,7 +1139,7 @@ void CProtoSniper::InputSetPaintIntervalVariance( inputdata_t &inputdata )
 {
 	m_flKeyfieldPaintTimeNoise = inputdata.value.Float();
 }
-#endif
+#endif*/
 
 
 //-----------------------------------------------------------------------------
@@ -1342,7 +1342,10 @@ void CProtoSniper::Event_Killed( const CTakeDamageInfo &info )
 
 		CBaseEntity *pGib;
 		bool bShouldIgnite = IsOnFire() || hl2_episodic.GetBool();
-		pGib = CreateRagGib( "models/combine_soldier.mdl", GetLocalOrigin(), GetLocalAngles(), (vecForward * flForce) + Vector(0, 0, 600), flFadeTime, bShouldIgnite );
+		if (!Q_strnicmp(STRING(gpGlobals->mapname), "d2_prison_01", 3))
+			pGib = CreateRagGib("models/combine_soldier_prisonguard.mdl", GetLocalOrigin(), GetLocalAngles(), (vecForward * flForce) + Vector(0, 0, 600), flFadeTime, bShouldIgnite);
+		else
+			pGib = CreateRagGib( "models/combine_soldier.mdl", GetLocalOrigin(), GetLocalAngles(), (vecForward * flForce) + Vector(0, 0, 600), flFadeTime, bShouldIgnite );
 
 	}
 

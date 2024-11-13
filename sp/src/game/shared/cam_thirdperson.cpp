@@ -83,22 +83,22 @@ void CThirdPersonManager::Update( void )
 	}
 
 	// If cheats have been disabled, pull us back out of third-person view.
-	if ( sv_cheats && !sv_cheats->GetBool() && GameRules() && GameRules()->AllowThirdPersonCamera() == false )
-	{
-		if ( (bool)input->CAM_IsThirdPerson() == true )
-		{
-			input->CAM_ToFirstPerson();
-		}
-		return;
-	}
+	//if ( sv_cheats && !sv_cheats->GetBool() && GameRules() && GameRules()->AllowThirdPersonCamera() == false )
+	//{
+		//if ( (bool)input->CAM_IsThirdPerson() == true )
+		//{
+			//input->CAM_ToFirstPerson();
+		//}
+		//return;
+	//}
 
-	if ( IsOverridingThirdPerson() == false )
-	{
-		if ( (bool)input->CAM_IsThirdPerson() != ( cl_thirdperson.GetBool() || m_bForced ) && GameRules() && GameRules()->AllowThirdPersonCamera() == true )
-		{
-			ToggleThirdPerson( m_bForced || cl_thirdperson.GetBool() );
-		}
-	}
+	//if ( IsOverridingThirdPerson() == false )
+	//{
+		//if ( (bool)input->CAM_IsThirdPerson() != ( cl_thirdperson.GetBool() || m_bForced ) && GameRules() && GameRules()->AllowThirdPersonCamera() == true )
+		//{
+			//ToggleThirdPerson( m_bForced || cl_thirdperson.GetBool() );
+		//}
+	//}
 #endif
 
 }

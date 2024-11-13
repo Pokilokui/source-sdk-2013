@@ -28,6 +28,8 @@
 #include "filesystem.h"
 #include <stdarg.h>
 
+extern ConVar *sv_autojump;
+
 extern IFileSystem *filesystem;
 
 #ifndef CLIENT_DLL
@@ -2353,6 +2355,8 @@ void CGameMovement::PlaySwimSound()
 //-----------------------------------------------------------------------------
 bool CGameMovement::CheckJumpButton( void )
 {
+	ConVar *sv_autojump = cvar->FindVar("sv_autojump");
+
 	if (player->pl.deadflag)
 	{
 		mv->m_nOldButtons |= IN_JUMP ;	// don't jump again until released
@@ -2404,7 +2408,7 @@ bool CGameMovement::CheckJumpButton( void )
 		return false;
 #endif
 
-	if ( mv->m_nOldButtons & IN_JUMP )
+	if (mv->m_nOldButtons & IN_JUMP && sv_autojump->GetInt() == 0)
 		return false;		// don't pogo stick
 
 	// Cannot jump will in the unduck transition.
@@ -2840,10 +2844,10 @@ inline bool CGameMovement::OnLadder( trace_t &trace )
 // HPE_BEGIN
 // [sbodenbender] make ladders easier to climb in cstrike
 //=============================================================================
-#if defined (CSTRIKE_DLL)
+//#if defined (CSTRIKE_DLL)
 ConVar sv_ladder_dampen ( "sv_ladder_dampen", "0.2", FCVAR_REPLICATED, "Amount to dampen perpendicular movement on a ladder", true, 0.0f, true, 1.0f );
 ConVar sv_ladder_angle( "sv_ladder_angle", "-0.707", FCVAR_REPLICATED, "Cos of angle of incidence to ladder perpendicular for applying ladder_dampen", true, -1.0f, true, 1.0f );
-#endif
+//#endif
 //=============================================================================
 // HPE_END
 //=============================================================================

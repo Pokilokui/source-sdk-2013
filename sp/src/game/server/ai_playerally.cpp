@@ -1183,9 +1183,15 @@ void CAI_PlayerAlly::Event_Killed( const CTakeDamageInfo &info )
 		GetSpeechSemaphore( this )->Release();
 
 	CAI_PlayerAlly *pMourner = dynamic_cast<CAI_PlayerAlly *>(FindSpeechTarget( AIST_NPCS ));
-	if ( pMourner )
+	/*if (pMourner)
 	{
 		pMourner->SpeakIfAllowed( TLK_ALLY_KILLED );
+	}*/
+
+	if (pMourner)
+	{
+		if(!info.GetAttacker()->IsPlayer())		//Friendly fire
+			pMourner->SpeakIfAllowed(TLK_ALLY_KILLED);
 	}
 
 	SetTarget( NULL );

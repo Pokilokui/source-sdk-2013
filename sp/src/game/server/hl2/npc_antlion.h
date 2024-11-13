@@ -164,6 +164,8 @@ public:
 	virtual void StopLoopingSounds( void );
 	bool    AllowedToBePushed( void );
 
+	virtual bool AllowedToIgnite(void) { return true; } // Allow npc to ignite
+
 	virtual Vector BodyTarget( const Vector &posSrc, bool bNoisy = true );
 	virtual float GetAutoAimRadius() { return 36.0f; }
 

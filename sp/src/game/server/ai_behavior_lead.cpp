@@ -1011,7 +1011,7 @@ bool CAI_LeadBehavior::Speak( AIConcept_t concept )
 	if ( !m_hasspokenstart && bNag )
 		return false;
 
-	if ( hl2_episodic.GetBool() )
+	/*if (hl2_episodic.GetBool())
 	{
 		// If we're a player ally, only speak the concept if we're allowed to.
 		// This allows the response rules to control it better (i.e. handles respeakdelay)
@@ -1019,7 +1019,15 @@ bool CAI_LeadBehavior::Speak( AIConcept_t concept )
 		CAI_PlayerAlly *pAlly = dynamic_cast<CAI_PlayerAlly*>(GetOuter());
 		if ( pAlly )
  			return pAlly->SpeakIfAllowed( concept, GetConceptModifiers( concept ) );
+	}*/
+
+	if (!Q_strnicmp(STRING(gpGlobals->mapname), "ep2", 3))
+	{
+		CAI_PlayerAlly* pAlly = dynamic_cast<CAI_PlayerAlly*>(GetOuter());
+		if (pAlly)
+			return pAlly->SpeakIfAllowed(concept, GetConceptModifiers(concept));
 	}
+
 
 	// Don't spam Nags
 	if ( bNag )

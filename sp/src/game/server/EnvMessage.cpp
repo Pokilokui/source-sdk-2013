@@ -217,7 +217,7 @@ void CCredits::OnRestore()
 
 void CCredits::RollOutroCredits()
 {
-	sv_unlockedchapters.SetValue( "15" );
+	//sv_unlockedchapters.SetValue( "15" );
 	
 	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
 

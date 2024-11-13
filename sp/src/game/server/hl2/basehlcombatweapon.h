@@ -90,6 +90,7 @@ public:
 	virtual int		WeaponRangeAttack1Condition( float flDot, float flDist );
 	virtual int		WeaponRangeAttack2Condition( float flDot, float flDist );
 
+
 protected:
 	int m_iBurstSize;
 	int	m_iFireMode;

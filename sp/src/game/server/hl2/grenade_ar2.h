@@ -30,6 +30,11 @@ public:
 	float				 m_fSpawnTime;
 	float				m_fDangerRadius;
 
+	//grenade go trought func_breakable
+	Vector				m_vecVelocity;
+	bool				m_bTouched;
+	//
+
 
 	void		Spawn( void );
 	void		Precache( void );

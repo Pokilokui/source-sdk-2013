@@ -65,8 +65,15 @@ extern ConVar replay_rendersetting_renderglow;
 #include "econ_item_description.h"
 #endif
 
+#include "clienteffectprecachesystem.h"		//Adding Glow Effects
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
+CLIENTEFFECT_REGISTER_BEGIN(PrecachePostProcessingEffectsGlow)			//Adding Glow Effects
+CLIENTEFFECT_MATERIAL("dev/glow_color")									//
+CLIENTEFFECT_MATERIAL("dev/halo_add_to_screen")							//
+CLIENTEFFECT_REGISTER_END_CONDITIONAL(engine->GetDXSupportLevel()>=90)	//
 
 #define ACHIEVEMENT_ANNOUNCEMENT_MIN_TIME 10
 
@@ -768,6 +775,7 @@ bool ClientModeShared::DoPostScreenSpaceEffects( const CViewSetup *pSetup )
 			return false;
 	}
 #endif 
+	g_GlowObjectManager.RenderGlowEffects(pSetup, 0); //Adding Glow Effects
 	return true;
 }
 
@@ -919,9 +927,31 @@ void ClientModeShared::Layout()
 	}
 }
 
+ConVar r_viewmodelfov("r_viewmodelfov", "0", FCVAR_CHEAT);
+
+
 float ClientModeShared::GetViewModelFOV( void )
 {
-	return v_viewmodel_fov.GetFloat();
+	//return v_viewmodel_fov.GetFloat();
+
+	float flFov = 90.0f;
+
+	if (r_viewmodelfov.GetFloat() > 0)
+		return r_viewmodelfov.GetFloat();
+
+	CBasePlayer* pPlayer = CBasePlayer::GetLocalPlayer();
+
+	if (!pPlayer)
+		return flFov;
+
+	C_BaseCombatWeapon* pWpn = pPlayer->GetActiveWeapon();
+
+	if (pWpn)
+	{
+		flFov = pWpn->GetWpnData().m_flViewModelFOV;
+	}
+
+	return flFov;
 }
 
 class CHudChat;

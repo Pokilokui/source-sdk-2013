@@ -128,5 +128,4 @@ $Project "Client (Episodic)"
 			$File	"episodic\c_npc_puppet.cpp"
 		}
 	}
-	
 }

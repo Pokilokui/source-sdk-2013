@@ -48,26 +48,26 @@ enum FuncDoorSpawnPos_t
 class CBaseDoor : public CBaseToggle
 {
 public:
-	DECLARE_CLASS( CBaseDoor, CBaseToggle );
+	DECLARE_CLASS(CBaseDoor, CBaseToggle);
 
 	DECLARE_SERVERCLASS();
 
-	void Spawn( void );
-	void Precache( void );
+	void Spawn(void);
+	void Precache(void);
 	bool CreateVPhysics();
-	bool KeyValue( const char *szKeyName, const char *szValue );
-	virtual void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	bool KeyValue(const char* szKeyName, const char* szValue);
+	virtual void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
 
-	virtual void StartBlocked( CBaseEntity *pOther );
-	virtual void Blocked( CBaseEntity *pOther );
-	virtual void EndBlocked( void );
+	virtual void StartBlocked(CBaseEntity* pOther);
+	virtual void Blocked(CBaseEntity* pOther);
+	virtual void EndBlocked(void);
 
-	void Activate( void );
+	void Activate(void);
 
-	virtual int	ObjectCaps( void ) 
+	virtual int	ObjectCaps(void)
 	{
 		int flags = BaseClass::ObjectCaps();
-		if ( HasSpawnFlags( SF_DOOR_PUSE ) )
+		if (HasSpawnFlags(SF_DOOR_PUSE))
 			return flags | FCAP_IMPULSE_USE | FCAP_USE_IN_RADIUS;
 
 		return flags;
@@ -76,38 +76,38 @@ public:
 	DECLARE_DATADESC();
 
 	// This is ONLY used by the node graph to test movement through a door
-	void InputSetToggleState( inputdata_t &inputdata );
-	virtual void SetToggleState( int state );
+	void InputSetToggleState(inputdata_t& inputdata);
+	virtual void SetToggleState(int state);
 
 	virtual bool IsRotatingDoor() { return false; }
 	virtual bool ShouldSavePhysics();
 	// used to selectivly override defaults
-	void DoorTouch( CBaseEntity *pOther );
+	void DoorTouch(CBaseEntity* pOther);
 
 	// local functions
-	int DoorActivate( );
-	void DoorGoUp( void );
-	void DoorGoDown( void );
-	void DoorHitTop( void );
-	void DoorHitBottom( void );
-	void UpdateAreaPortals( bool isOpen );
-	void Unlock( void );
-	void Lock( void );
-	int GetDoorMovementGroup( CBaseDoor *pDoorList[], int listMax );
+	int DoorActivate();
+	void DoorGoUp(void);
+	void DoorGoDown(void);
+	void DoorHitTop(void);
+	void DoorHitBottom(void);
+	void UpdateAreaPortals(bool isOpen);
+	void Unlock(void);
+	void Lock(void);
+	int GetDoorMovementGroup(CBaseDoor* pDoorList[], int listMax);
 
 	// Input handlers
-	void InputClose( inputdata_t &inputdata );
-	void InputLock( inputdata_t &inputdata );
-	void InputOpen( inputdata_t &inputdata );
-	void InputToggle( inputdata_t &inputdata );
-	void InputUnlock( inputdata_t &inputdata );
-	void InputSetSpeed( inputdata_t &inputdata );
+	void InputClose(inputdata_t& inputdata);
+	void InputLock(inputdata_t& inputdata);
+	void InputOpen(inputdata_t& inputdata);
+	void InputToggle(inputdata_t& inputdata);
+	void InputUnlock(inputdata_t& inputdata);
+	void InputSetSpeed(inputdata_t& inputdata);
 
 	Vector m_vecMoveDir;		// The direction of motion for linear moving doors.
 
 	locksound_t m_ls;			// door lock sounds
-	
-	byte	m_bLockedSentence;	
+
+	byte	m_bLockedSentence;
 	byte	m_bUnlockedSentence;
 
 	bool	m_bForceClosed;			// If set, always close, even if we're blocked.
@@ -115,7 +115,7 @@ public:
 	bool	m_bLocked;				// Whether the door is locked
 	bool	m_bIgnoreDebris;
 	bool	m_bIgnoreNonPlayerEntsOnBlock;	// Non-player entities should never block.  This variable needs more letters.
-	
+
 	FuncDoorSpawnPos_t m_eSpawnPosition;
 
 	float	m_flBlockDamage;		// Damage inflicted when blocked.
@@ -125,7 +125,7 @@ public:
 	string_t	m_NoiseArrivedClosed;		//End sound
 	string_t	m_ChainTarget;		///< Entity name to pass Touch and Use events to
 
-	CNetworkVar( float, m_flWaveHeight );
+	CNetworkVar(float, m_flWaveHeight);
 
 	// Outputs
 	COutputEvent m_OnBlockedClosing;		// Triggered when the door becomes blocked while closing.
@@ -138,25 +138,25 @@ public:
 	COutputEvent m_OnOpen;					// Triggered when the door is told to open.
 	COutputEvent m_OnLockedUse;				// Triggered when the user tries to open a locked door.
 
-	void			StartMovingSound( void );
-	virtual void	StopMovingSound( void );
-	void			MovingSoundThink( void );
+	void			StartMovingSound(void);
+	virtual void	StopMovingSound(void);
+	void			MovingSoundThink(void);
 #ifdef HL1_DLL
-	bool		PassesBlockTouchFilter(CBaseEntity *pOther);
+	bool		PassesBlockTouchFilter(CBaseEntity* pOther);
 	string_t	m_iBlockFilterName;
 	EHANDLE		m_hBlockFilter;
 #endif
-	
-	bool		ShouldLoopMoveSound( void ) { return m_bLoopMoveSound; }
+
+	bool		ShouldLoopMoveSound(void) { return m_bLoopMoveSound; }
 	bool		m_bLoopMoveSound;			// Move sound loops until stopped
 
 private:
-	void ChainUse( void );	///< Chains +use on through to m_ChainTarget
-	void ChainTouch( CBaseEntity *pOther );	///< Chains touch on through to m_ChainTarget
-	void SetChaining( bool chaining )	{ m_isChaining = chaining; }	///< Latch to prevent recursion
+	void ChainUse(void);	///< Chains +use on through to m_ChainTarget
+	void ChainTouch(CBaseEntity* pOther);	///< Chains touch on through to m_ChainTarget
+	void SetChaining(bool chaining) { m_isChaining = chaining; }	///< Latch to prevent recursion
 	bool m_isChaining;
 
-	void CloseAreaPortalsThink( void );	///< Delays turning off area portals when closing doors to prevent visual artifacts
+	void CloseAreaPortalsThink(void);	///< Delays turning off area portals when closing doors to prevent visual artifacts
 };
 
 #endif // DOORS_H

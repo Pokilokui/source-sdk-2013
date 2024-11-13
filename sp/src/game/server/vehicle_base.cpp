@@ -620,7 +620,7 @@ void CPropVehicleDriveable::EnterVehicle( CBaseCombatCharacter *pPassenger )
 //-----------------------------------------------------------------------------
 void CPropVehicleDriveable::ExitVehicle( int nRole )
 {
-	CBasePlayer *pPlayer = m_hPlayer;
+	CBasePlayer* pPlayer = m_hPlayer;
 	if ( !pPlayer )
 		return;
 
